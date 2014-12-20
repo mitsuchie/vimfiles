@@ -1,0 +1,9 @@
+snippet n
+    sub new {
+        my $class = shift;
+        my $args = ref $_[0] ? $_[0] : +{@_};
+
+        ${1:code}
+
+        bless $args, $class;
+    }
