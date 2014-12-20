@@ -144,7 +144,9 @@ nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
 " =============================================================================
 if has('win32')
   let g:neocomplete#data_directory = "~/vimfiles/cache/neocomplete/"
-  let g:neomru#directory_mru_path  = "~/vimfiles/cache/neomru/"
+  let g:neosnippet#data_directory  = "~/vimfiles/cache/neosnippet/"
+  let g:neomru#directory_mru_path  = "~/vimfiles/cache/neomru/directory"
+  let g:neomru#file_mru_path       = "~/vimfiles/cache/neomru/file"
   let g:unite_data_directory = "~/vimfiles/cache/unite/"
 endif
 
