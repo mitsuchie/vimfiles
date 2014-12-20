@@ -61,8 +61,6 @@ NeoBundle 'tpope/vim-rails'            " rails
 NeoBundle 'kannokanno/previm'          " プレビュー
 NeoBundle 'tyru/open-browser.vim'      " ブラウザオープン
 NeoBundle 'tpope/vim-surround'         " テキストオブジェクト
-" NeoBundle 'scrooloose/syntastic'     " 静的コード解析
-" NeoBundle 'ekalinin/Dockerfile.vim'  " docker
 NeoBundle 'tpope/vim-fugitive'         " Git
 NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
 call neobundle#end()
@@ -142,6 +140,13 @@ nnoremap t <C-t>
 nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
 nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
 
+
+" =============================================================================
+if has('win32')
+  let g:neocomplete#data_directory = "~/vimfiles/cache/neocomplete/"
+  let g:neomru#directory_mru_path  = "~/vimfiles/cache/neomru/"
+  let g:unite_data_directory = "~/vimfiles/cache/unite/"
+endif
 
 " =============================================================================
 " neocomplete
