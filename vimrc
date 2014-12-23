@@ -5,14 +5,6 @@ set fileencodings=utf-8,cp932,iso-2022-jp,sjis,euc-jp
 set fileformat=unix
 set fileformats=unix,dos,mac
 
-if has('vim_starting')
-  if has('win32')
-    set runtimepath+=~/vimfiles/bundle/neobundle.vim/
-  else
-    set runtimepath+=~/.vim/bundle/neobundle.vim/
-  endif
-endif
-
 " =============================================================================
 " autocmdを初期化
 " =============================================================================
@@ -21,17 +13,25 @@ augroup myvimrc
 augroup END
 
 " =============================================================================
+" vimfilesの設定
+" =============================================================================
+let s:home = '~/.vim'
+if has('win32') || has('win64')
+  let s:home = '~/vimfiles'
+endif
+
+" =============================================================================
 " NeoBundle
 " =============================================================================
-if has('win32')
-  call neobundle#begin(expand('~/vimfiles/bundle/'))
-else
-  call neobundle#begin(expand('~/.vim/bundle/'))
+if has('vim_starting')
+  let &runtimepath .= ','.s:home.'/bundle/neobundle.vim/'
 endif
+
+call neobundle#begin(expand(s:home."/bundle/"))
 
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-if !has('win32')
+if !(has('win32') || has('win64'))
   NeoBundle 'Shougo/vimproc', {
 \   'build' : {
 \       'cygwin'  : 'make -f make_cygwin.mak',
@@ -40,6 +40,7 @@ if !has('win32')
 \   },
 \  }
 endif
+
 NeoBundle 'w0ng/vim-hybrid'            " カラースキーム
 NeoBundle 'Shougo/unite.vim'           " 検索インタフェース
 NeoBundle 'Shougo/neomru.vim'          " 履歴
@@ -63,8 +64,18 @@ NeoBundle 'tyru/open-browser.vim'      " ブラウザオープン
 NeoBundle 'tpope/vim-surround'         " テキストオブジェクト
 NeoBundle 'tpope/vim-fugitive'         " Git
 NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
-call neobundle#end()
 
+" C# ... 主にUnityに使うっぽい
+NeoBundleLazy 'nosami/Omnisharp', {
+\   'autoload': {'filetypes': ['cs']},
+\   'build': {
+\     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
+\     'mac': 'xbuild server/OmniSharp.sln',
+\     'unix': 'xbuild server/OmniSharp.sln',
+\   }
+\ }
+
+call neobundle#end()
 NeoBundleCheck
 
 
@@ -142,13 +153,11 @@ nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
 
 
 " =============================================================================
-if has('win32')
-  let g:neocomplete#data_directory = "~/vimfiles/cache/neocomplete/"
-  let g:neosnippet#data_directory  = "~/vimfiles/cache/neosnippet/"
-  let g:neomru#directory_mru_path  = "~/vimfiles/cache/neomru/directory"
-  let g:neomru#file_mru_path       = "~/vimfiles/cache/neomru/file"
-  let g:unite_data_directory = "~/vimfiles/cache/unite/"
-endif
+let g:neocomplete#data_directory = s:home."/cache/neocomplete/"
+let g:neosnippet#data_directory  = s:home."/cache/neosnippet/"
+let g:neomru#directory_mru_path  = s:home."/cache/neomru/directory"
+let g:neomru#file_mru_path       = s:home."/cache/neomru/file"
+let g:unite_data_directory       = s:home."/cache/unite/"
 
 " =============================================================================
 " neocomplete
@@ -257,7 +266,7 @@ let g:quickrun_config = {
 \}
 
 " VC++をデフォルトにしておく
-if has('win32')
+if has('win32') || has('win64')
   let g:quickrun_config.cpp = { 'type': 'cpp/vc' }
 endif
 
