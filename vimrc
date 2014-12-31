@@ -104,6 +104,7 @@ set listchars=tab:^\_,trail:~,extends:.
 set backspace=indent,eol,start  " インデントを消せるようにする
 set wildmenu
 set wildmode=list,longest:full
+set formatoptions-=ro
 set cursorline
 hi clear CursorLine
 
@@ -116,11 +117,17 @@ augroup myvimrc
   " autocmd FileType ruby setlocal expandtab ts=2 sts=2 sw=2 autoindent
 augroup END
 
+if has('win32') || has('win64')
+  set termencoding=cp932
+endif
+
 if $TERM == "xterm"
   set shell=bash
 endif
 
-set t_Co=256
+if !(has('win32') || has('win64'))
+  set t_Co=256
+endif
 
 " カラースキーム
 colorscheme hybrid
@@ -210,7 +217,8 @@ imap <C-Space> <C-X><C-O>
 " neosnippet
 " =============================================================================
 let g:neosnippet#enable_snipmate_compatibility = 1
-let g:neosnippet#snippets_directory='~/vimfiles/snippets/'
+let g:neosnippet#snippets_directory = expand('~/vimfiles/snippets/')
+
 
 " <C-Space>でスニペットを展開する
 imap <expr><C-Space> neosnippet#expandable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<C-Space>"
