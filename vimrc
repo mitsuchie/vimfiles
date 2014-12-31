@@ -15,9 +15,9 @@ augroup END
 " =============================================================================
 " vimfilesの設定
 " =============================================================================
-let s:home = '~/.vim'
+let s:home = expand('~/.vim')
 if has('win32') || has('win64')
-  let s:home = '~/vimfiles'
+  let s:home = expand('~/vimfiles')
 endif
 
 " =============================================================================
@@ -160,11 +160,16 @@ nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
 
 
 " =============================================================================
+" cache
+" =============================================================================
 let g:neocomplete#data_directory = s:home."/cache/neocomplete/"
 let g:neosnippet#data_directory  = s:home."/cache/neosnippet/"
 let g:neomru#directory_mru_path  = s:home."/cache/neomru/directory"
 let g:neomru#file_mru_path       = s:home."/cache/neomru/file"
 let g:unite_data_directory       = s:home."/cache/unite/"
+
+let &viminfo .= ",n".s:home."/cache/viminfo.txt"
+
 
 " =============================================================================
 " neocomplete
