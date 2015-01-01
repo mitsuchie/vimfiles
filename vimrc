@@ -222,7 +222,7 @@ imap <C-Space> <C-X><C-O>
 " neosnippet
 " =============================================================================
 let g:neosnippet#enable_snipmate_compatibility = 1
-let g:neosnippet#snippets_directory = expand('~/vimfiles/snippets/')
+let g:neosnippet#snippets_directory = s:home.'/snippets/'
 
 
 " <C-Space>でスニペットを展開する
