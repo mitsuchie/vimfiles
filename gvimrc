@@ -1,9 +1,19 @@
+set encoding=utf-8
+scriptencoding utf-8
+set fileencoding=utf-8
+set fileencodings=utf-8,cp932,iso-2022-jp,sjis,euc-jp
+set fileformat=unix
+set fileformats=unix,dos,mac
+
+" カラー
+set t_Co=256
+
 " カラースキーム
 colorscheme hybrid
 hi LineNr ctermfg=14 guifg=#878b91
 
 " フォントとメニュー
-if has('win32')
+if has('win32') || has('win64')
   set guifont=Ricty:h14:cSHIFTJIS
   let &guioptions = substitute(&guioptions, '[mT]', '', 'g')
 end

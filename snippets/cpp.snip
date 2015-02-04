@@ -132,6 +132,93 @@ options     head
 
     } uf;
 
+snippet     SegmentTree
+abbr        "SegmentTree(区間管理)"
+options     head
+alias       segtree
+    struct SegmentTree
+    {
+        typedef unsigned int u32;
+        u32 msb(u32 x){ u32 l=0, r=32, m=0; while(l+1<r){ m=(l+r)>>1; (x>>m?l:r)=m; } return l; }
+
+        // 親子関係 => 親:(p-1)/2, 左:p*2+1, 右:p*2+2
+        vector<int> data;
+        void init(int n,int v=0){ data.assign((1<<(msb(n-1)+1))*2-1,v); }
+        int  size() const { return (data.size()+1)/2; }
+        // 葉から木全体の値を更新する
+        void add(int p,int x){ p+=size()-1; data[p]+=x; while(p>0){ p=(p-1)/2; data[p]+=x; } }
+        // 二分木の構造を利用して区間の値を取得する
+        int query(int a,int b){ return query(a,b,0,0,size()-1); }
+        int query(int a,int b,int k,int l,int r)
+        {
+            if(r<=a||b<=l){ return 0; }
+            if(a<=l&&r<=b){ return data[k]; }
+
+            return query(a,b,k*2+1,l,(l+r)/2) + query(a,b,k*2+2,(l+r)/2,r);
+        }
+
+    } segtree;
+
+snippet     RangeMinimumQuery
+abbr        "RMQ by SegmentTree"
+options     head
+alias       segment_tree_for_rmq
+alias       segtree_for_rmq
+    struct SegmentTree
+    {
+        typedef unsigned int u32;
+        u32 msb(u32 x){ u32 l=0, r=32, m=0; while(l+1<r){ m=(l+r)>>1; (x>>m?l:r)=m; } return l; }
+
+        // 親子関係 => 親:(p-1)/2, 左:p*2+1, 右:p*2+2
+        vector<int> data;
+        void init(int n,int v=INT_MAX){ data.assign((1<<(msb(n-1)+1))*2-1,v); }
+        int  size() const { return (data.size()+1)/2; }
+        // 葉から木全体の値を更新する
+        void add(int p,int x){ p+=size()-1; data[p]=x; while(p>0){ p=(p-1)/2; data[p]=min(data[p*2+1],data[p*2-1]); } }
+        // 二分木の構造を利用して区間の値を取得する
+        int query(int a,int b){ return query(a,b,0,0,size()-1); }
+        int query(int a,int b,int k,int l,int r)
+        {
+            if(r<=a||b<=l){ return INT_MAX; }
+            if(a<=l&&r<=b){ return data[k]; }
+
+            return min(query(a,b,k*2+1,l,(l+r)/2), query(a,b,k*2+2,(l+r)/2,r));
+        }
+
+    } segtree;
+
+snippet     BinaryIndexedTree
+abbr        "BinaryIndexedTree(領域総和クエリ)"
+options     head
+alias       bit
+alias       fenwick
+    struct BinaryIndexedTree
+    {
+        vector<int> data;
+
+        void init(int n){ data.assign(n+1,0); }
+        // 座標[p]の値を更新する, (p&-p)は最下位ビットを示す
+        void add(int p,int x){ while(p<data.size()){ data[p]+=x; p+=(p&-p); } }
+        // 領域[0,p]の総和を求める
+        int sum(int p){ int res=0; while(p>0){ res+=data[p]; p-=(p&-p); } return res; } 
+        // 領域[l,r]の総和を求める
+        int sum(int l,int r){ return sum(r) - (l?sum(l-1):0); }
+        // 総和がx以下になる最大の領域[0,p]を検索する (x番目に小さい値とか)
+        int search(int x)
+        {
+            int lhs = 0, rhs = data.size()-1, mid = 0;
+
+            while(lhs+1<rhs)
+            {
+                int mid = (lhs+rhs)/2;
+                if(sum(0,mid)<x){ lhs = mid; } else { rhs = mid; }
+            }
+
+            return rhs;
+        }
+
+    } bit;
+
 #-------------------------------------------------------------------------------
 # algorithm
 #-------------------------------------------------------------------------------
@@ -377,6 +464,21 @@ options     head
 
         return res;
     }
+
+snippet     BinarySearch
+abbr        "二分探索"
+options     head
+    int lhs = 0, rhs = MAXN-1;
+
+    while(lhs+1<rhs)
+    {
+        int mid = (lhs+rhs)/2;
+
+        if(${1:condition}){ lhs = mid; }
+        else { rhs = mid; }
+    }
+
+    int res = rhs;
 
 #-------------------------------------------------------------------------------
 # cpp utils
