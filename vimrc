@@ -112,6 +112,8 @@ set listchars=tab:^\_,trail:~,extends:.
 set backspace=indent,eol,start  " インデントを消せるようにする
 set wildmenu
 set wildmode=list,longest:full
+set formatoptions-=ro
+set cursorline
 hi clear CursorLine
 
 " カラースキーム
@@ -120,6 +122,10 @@ if &t_Co <= 16
 else
   set cursorline
   colorscheme hybrid
+endif
+
+if has('win32') || has('win64')
+  set termencoding=cp932
 endif
 
 " Post Launch Settings
@@ -159,6 +165,7 @@ nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
 nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
 " スペースの活用
 nnoremap <Space> .
+
 
 " =============================================================================
 " キャッシュ
