@@ -6,6 +6,15 @@ set fileformat=unix
 set fileformats=unix,dos,mac
 
 " =============================================================================
+" terminal encoding
+" =============================================================================
+if has('win32') || has('win64')
+  set termencoding=cp932
+else
+  set termencoding=utf-8
+endif
+
+" =============================================================================
 " autocmdを初期化
 " =============================================================================
 augroup myvimrc
@@ -28,18 +37,15 @@ if has('vim_starting')
 endif
 
 call neobundle#begin(expand(s:home."/bundle/"))
-
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-if !(has('win32') || has('win64'))
-  NeoBundle 'Shougo/vimproc', {
-\   'build' : {
-\       'cygwin'  : 'make -f make_cygwin.mak',
-\       'mac'     : 'make -f make_mac.mak',
-\       'unix'    : 'make -f make_unix.mak',
-\   },
-\  }
-endif
+NeoBundle 'Shougo/vimproc.vim', {
+\ 'build' : {
+\     'windows' : 'mingw32-make -f make_mingw64.mak',
+\     'mac'     : 'make -f make_mac.mak',
+\     'linux'   : 'make',
+\    },
+\ }
 
 NeoBundle 'w0ng/vim-hybrid'            " カラースキーム
 NeoBundle 'Shougo/unite.vim'           " 検索インタフェース
@@ -66,6 +72,8 @@ NeoBundle 'tpope/vim-fugitive'         " Git
 NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
 NeoBundle 'groenewege/vim-less'        " LESS
 NeoBundle 'kchmck/vim-coffee-script'   " CoffeeScript
+NeoBundle 'AndrewRadev/switch.vim'     " toggling text
+NeoBundle 'ujihisa/unite-colorscheme'  " Uniteでカラースキームを選ぶ
 
 " C# ... 主にUnityに使うっぽい
 NeoBundleLazy 'nosami/Omnisharp', {
@@ -88,9 +96,9 @@ set number              " 行数表示
 set ts=4 sw=4 sts=4     " 基本インデント
 set incsearch           " インクリメントサーチ
 set smartindent         " スマートインデント
-set nobackup            " バックアップ無し
-set noswapfile          " スワップ無し
-set noundofile          " undoファイル無し
+set nobackup            " バックアップなし
+set noswapfile          " スワップなし
+set undofile            " undoファイルあり
 set autochdir           " 開いたファイルのディレクトリに移動
 set tags=tags;          " タグの設定
 set laststatus=2        " ステータス行を2行にする
@@ -101,36 +109,34 @@ set showmatch           " 対応する括弧の表示
 set hlsearch            " 検索結果のハイライト
 set history=100         " ヒストリの最大
 set shellslash          " Windowsで/
-set list                " 不可視文字描画
-set listchars=tab:^\_,trail:~,extends:.
 set backspace=indent,eol,start  " インデントを消せるようにする
 set formatoptions-=ro   " 改行時にコメント継続させない
+set list                " 不可視文字描画
+set listchars=tab:^\_,trail:~,extends:.
 set wildmenu
 set wildmode=list,longest:full
 set cursorline
 hi clear CursorLine
 
+" カラースキーム
+if &t_Co <= 16
+  colorscheme desert
+else
+  set cursorline
+  colorscheme hybrid
+endif
+
+if has('win32') || has('win64')
+  set termencoding=cp932
+endif
+
+" Post Launch Settings
 augroup myvimrc
   " grepしたらquickfixを表示
   autocmd QuickFixCmdPost *grep* cwindow
   " vimfiles/ftplugin/ruby.vim が反映されなかったらココ！
   " autocmd FileType ruby setlocal expandtab ts=2 sts=2 sw=2 autoindent
 augroup END
-
-if has('win32') || has('win64')
-  set termencoding=cp932
-endif
-
-if $TERM == "xterm"
-  set shell=bash
-endif
-
-if !(has('win32') || has('win64'))
-  set t_Co=256
-endif
-
-" カラースキーム
-colorscheme hybrid
 
 
 " =============================================================================
@@ -157,6 +163,9 @@ nnoremap { gT
 nnoremap t <C-t>
 nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
 nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
+" スペースの活用
+nnoremap <Space> .
+
 " 互換性の問題
 if !has('gui_running')
   augroup myvimrc
@@ -165,15 +174,16 @@ if !has('gui_running')
 endif
 
 " =============================================================================
-" cache
+" キャッシュ
 " =============================================================================
 let g:neocomplete#data_directory = s:home."/cache/neocomplete/"
 let g:neosnippet#data_directory  = s:home."/cache/neosnippet/"
 let g:neomru#directory_mru_path  = s:home."/cache/neomru/directory"
 let g:neomru#file_mru_path       = s:home."/cache/neomru/file"
 let g:unite_data_directory       = s:home."/cache/unite/"
-
-let &viminfo .= ",n".s:home."/cache/viminfo.txt"
+let &undodir     = s:home.'/cache/undo'
+" let &backupdir = s:home.'/cache/backup'
+" let &directory = s:home.'/cache/swap'
 
 
 " =============================================================================
@@ -267,12 +277,13 @@ let g:quickrun_config = {
 \    'outputter/quickfix/open_cmd' : '',
 \  },
 \  'cpp/vc': {
-\    'exec': ['cl.bat %o %S /Fo%S:P:R.obj /Fe%S:P:R.exe > nul',
+\    'exec': ['cl.bat %o %S /Fo%S:P:R.obj /Fe%S:P:R.exe',
 \             '%S:P:R.exe %a'],
 \    'tempfile': '%{tempname()}.cpp',
 \    'hook/sweep/files': ['%S:P:R.exe', '%S:P:R.obj'],
 \    'hook/output_encode/encoding': 'cp932'
 \  },
+\  'cs': { 'hook/output_encode/encoding': 'cp932' },
 \  'watchdogs_checker/vc' : {
 \    'command'   : 'cl.bat',
 \    'exec'      : '%c /Zs %o %s:p ',
@@ -305,10 +316,11 @@ execute 'sign define '.get(g:qfsigns#Config,'name').' texthl=Error text=>>'
 " =============================================================================
 " ref
 " =============================================================================
-let g:ref_refe_encoding = "UTF-8"
 " + でカーソル下の単語のリファレンスを開く
 nmap <silent> + <Plug>(ref-keyword)
 vmap <silent> + <Plug>(ref-keyword)
+
+let g:ref_refe_encoding = "UTF-8"
 
 
 " =============================================================================
@@ -321,16 +333,24 @@ let g:unite_source_history_yank_limit = 100 " 履歴の最大を設定
 " , にショートカットを割り振っておく
 " Everythingを起動している必要あり、加えて別途es.exeをDLしてパスを通す
 nnoremap <silent> ,a  :<C-u>Unite everything/async -buffer-name=everything<CR>
-" 最近開いたファイルとかその他諸々(かなり高速)
+" 最近開いたファイルとかその他諸々
 nnoremap <silent> ,f :<C-u>Unite buffer file_mru file -buffer-name=searcher<CR>
+nnoremap <silent> ,,f :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
+" ファイル
+nnoremap <silent> ,e :<C-u>Unite buffer -buffer-name=filer<CR>
 " ヤンク(コピー履歴)
-nnoremap <silent> ,y :<C-u>Unite history/yank -buffer-name=history/yank<CR>
+nnoremap <silent> ,y :<C-u>Unite history/yank -buffer-name=history_yank<CR>
 " grep結果, :Unite grep:(パス)
-nnoremap <silent> ,g :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
+nnoremap <silent> ,g :<C-u>Unite grep:. -buffer-name=search<CR>
+nnoremap <silent> ,,g :<C-u>Unite grep:! -buffer-name=search<CR>
 " outline結果, :Unite outline
-nnoremap <silent> ,d :<C-u>Unite outline -buffer-name=outline-buffer<CR>
-" バッファ
-nnoremap <silent> ,b :<C-u>Unite buffer -buffer-name=filer<CR>
+nnoremap <silent> ,d :<C-u>Unite outline -buffer-name=outline<CR>
+" プロジェクト
+nnoremap <silent> ,s :<C-u>Unite file_rec:! -buffer-name=project<CR>
+
+if !(has('win32') || has('win64'))
+  nnoremap <silent> ,a :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
+endif
 
 " <C-l>でウィンドウ分割して開く, <C-o>でタブで開く
 augroup myvimrc
@@ -340,18 +360,24 @@ augroup myvimrc
   autocmd FileType unite inoremap <silent> <buffer> <expr> <C-o> unite#do_action('tabopen')
   autocmd FileType unite nnoremap <silent> <buffer> <ESC><ESC> :q<CR>
   autocmd FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
+  autocmd FileType unite nnoremap <silent> <buffer> <C-c> :q<CR>
+  autocmd FileType unite inoremap <silent> <buffer> <C-c> <ESC>:q<CR>
 augroup END
 
-" grepはthe platium searcherを使う（速い！） (必須) pt.exe
+" grepはthe platium searcherを使う (必須) pt.exe
 if executable('pt')
+  set grepprg=pt\ --nogroup
   let g:unite_source_grep_command = 'pt'
   let g:unite_source_grep_default_opts = '--nogroup --nocolor'
   let g:unite_source_grep_recursive_opt = ''
   let g:unite_source_grep_encoding = 'utf-8'
 endif
 
-set grepprg=pt\ --nogroup
-
+call unite#custom#profile('default', 'context', {
+      \ 'prompt_direction': 'top',
+      \ 'prompt': '> ',
+      \ 'candidate_icon': '- ',
+      \ 'hide_icon': 0 })
 
 " =============================================================================
 " codic
@@ -400,6 +426,23 @@ let g:previm_open_cmd = ''
 nnoremap [previm] <Nop>
 nnoremap <silent> <F7> :<C-u>PrevimOpen<CR>
 nnoremap <silent> <F5> :call previm#refresh()<CR>
+
+
+" =============================================================================
+" switch
+" =============================================================================
+" 文字列リテラルをトグル
+" 'string' → "string" → 'string' ...
+let g:switch_custom_definitions =
+\[
+\   {
+\       '''\(.\{-}\)''' :  '"\1"',
+\        '"\(.\{-}\)"'  : '''\1''',
+\   },
+\]
+
+" 呼び出し用のキーマッピング
+nnoremap - :<C-u>Switch<CR>
 
 
 " =============================================================================
