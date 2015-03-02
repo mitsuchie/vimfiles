@@ -64,6 +64,8 @@ NeoBundle 'tyru/open-browser.vim'      " ブラウザオープン
 NeoBundle 'tpope/vim-surround'         " テキストオブジェクト
 NeoBundle 'tpope/vim-fugitive'         " Git
 NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
+NeoBundle 'groenewege/vim-less'        " LESS
+NeoBundle 'kchmck/vim-coffee-script'   " CoffeeScript
 
 " C# ... 主にUnityに使うっぽい
 NeoBundleLazy 'nosami/Omnisharp', {
@@ -102,17 +104,15 @@ set shellslash          " Windowsで/
 set list                " 不可視文字描画
 set listchars=tab:^\_,trail:~,extends:.
 set backspace=indent,eol,start  " インデントを消せるようにする
+set formatoptions-=ro   " 改行時にコメント継続させない
 set wildmenu
 set wildmode=list,longest:full
-set formatoptions-=ro
 set cursorline
 hi clear CursorLine
 
 augroup myvimrc
   " grepしたらquickfixを表示
   autocmd QuickFixCmdPost *grep* cwindow
-  " 透明度の設定
-  autocmd guienter * set transparency=245
   " vimfiles/ftplugin/ruby.vim が反映されなかったらココ！
   " autocmd FileType ruby setlocal expandtab ts=2 sts=2 sw=2 autoindent
 augroup END
@@ -157,7 +157,12 @@ nnoremap { gT
 nnoremap t <C-t>
 nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
 nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
-
+" 互換性の問題
+if !has('gui_running')
+  augroup myvimrc
+    autocmd VimEnter * imap <Nul> <C-Space>
+  augroup END
+endif
 
 " =============================================================================
 " cache
@@ -223,7 +228,6 @@ imap <C-Space> <C-X><C-O>
 " =============================================================================
 let g:neosnippet#enable_snipmate_compatibility = 1
 let g:neosnippet#snippets_directory = s:home.'/snippets/'
-
 
 " <C-Space>でスニペットを展開する
 imap <expr><C-Space> neosnippet#expandable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<C-Space>"
