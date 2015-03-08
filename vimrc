@@ -173,6 +173,10 @@ call submode#map('resize', 'n', '', 'sdk', '<C-w>-')
 " nnoremap K 5k
 " vnoremap J 5j
 " vnoremap K 5k
+nnoremap J <NOP>
+nnoremap K <NOP>
+vnoremap J <NOP>
+vnoremap K <NOP>
 call submode#enter_with('move', 'n', '', 'sj', '5j')
 call submode#enter_with('move', 'n', '', 'sk', '5k')
 call submode#map('move', 'n', '', 'j', '5j')
