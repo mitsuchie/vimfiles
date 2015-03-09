@@ -75,6 +75,7 @@ NeoBundle 'groenewege/vim-less'        " LESS
 NeoBundle 'kchmck/vim-coffee-script'   " CoffeeScript
 NeoBundle 'AndrewRadev/switch.vim'     " toggling text
 NeoBundle 'ujihisa/unite-colorscheme'  " Uniteでカラースキームを選ぶ
+NeoBundle 'kana/vim-submode'           " submode
 
 " C# ... 主にUnityに使うっぽい
 NeoBundleLazy 'nosami/Omnisharp', {
@@ -120,6 +121,10 @@ set t_ut=              " for tmux
 set cursorline
 hi clear CursorLine
 
+if !(has('win32') || has('win64'))
+  set t_Co=256
+endif
+
 " カラースキーム
 if &t_Co <= 16
   colorscheme desert
@@ -143,29 +148,49 @@ augroup END
 " =============================================================================
 " keymapping
 " =============================================================================
+let g:submode_timeout = 0
+let g:submode_keep_leaving_key = 1
+let g:submode_keyseqs_to_leave = ['s', 'q']
+
 " エスケープ
 inoremap jj <ESC>
 " <ESC>連打でハイライトを消す
 nnoremap <ESC><ESC> :nohlsearch<CR>
 " ウィンドウ幅の調整
-nnoremap <C-l> <C-w>>
-nnoremap <C-h> <C-w><
-nnoremap <C-j> <C-w>+
-nnoremap <C-k> <C-w>-
+" nnoremap <C-l> <C-w>>
+" nnoremap <C-h> <C-w><
+" nnoremap <C-j> <C-w>+
+" nnoremap <C-k> <C-w>-
+call submode#enter_with('resize', 'n', '', 'sdl', '<C-w>>')
+call submode#enter_with('resize', 'n', '', 'sdh', '<C-w><')
+call submode#enter_with('resize', 'n', '', 'sdj', '<C-w>+')
+call submode#enter_with('resize', 'n', '', 'sdk', '<C-w>-')
+call submode#map('resize', 'n', '', 'sdl', '<C-w>>')
+call submode#map('resize', 'n', '', 'sdh', '<C-w><')
+call submode#map('resize', 'n', '', 'sdj', '<C-w>+')
+call submode#map('resize', 'n', '', 'sdk', '<C-w>-')
 " いっぱい移動する
-nnoremap J 5j
-nnoremap K 5k
-vnoremap J 5j
-vnoremap K 5k
+" nnoremap J 5j
+" nnoremap K 5k
+" vnoremap J 5j
+" vnoremap K 5k
+call submode#enter_with('move', 'n', '', 'sj', '5j')
+call submode#enter_with('move', 'n', '', 'sk', '5k')
+call submode#map('move', 'n', '', 'j', '5j')
+call submode#map('move', 'n', '', 'k', '5k')
 " タブの移動
-nnoremap } gt
-nnoremap { gT
+" nnoremap } gt
+" nnoremap { gT
+call submode#enter_with('tabmode', 'n', '', 'sl', 'gt')
+call submode#enter_with('tabmode', 'n', '', 'sh', 'gT')
+call submode#map('tabmove', 'n', '', 'l', 'gt')
+call submode#map('tabmode', 'n', '', 'h', 'gT')
 " タグ関係
 nnoremap t <C-t>
 nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
 nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
 " スペースの活用
-nnoremap <Space> .
+" nnoremap <Space> .
 
 " 互換性の問題
 if !has('gui_running')
@@ -381,6 +406,7 @@ call unite#custom#profile('default', 'context', {
       \ 'prompt': '> ',
       \ 'candidate_icon': '- ',
       \ 'hide_icon': 0 })
+
 
 " =============================================================================
 " codic
