@@ -65,6 +65,7 @@ NeoBundle 'KazuakiM/vim-qfsigns'       " quickfixをsign領域に表示
 NeoBundle 'koron/codic-vim'            " 英和辞書(補完にも使う)
 NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
 NeoBundle 'tpope/vim-rails'            " rails
+NeoBundle 'basyura/unite-rails'        " rails
 NeoBundle 'kannokanno/previm'          " プレビュー
 NeoBundle 'tyru/open-browser.vim'      " ブラウザオープン
 NeoBundle 'tpope/vim-surround'         " テキストオブジェクト
@@ -109,12 +110,13 @@ set showmatch           " 対応する括弧の表示
 set hlsearch            " 検索結果のハイライト
 set history=100         " ヒストリの最大
 set shellslash          " Windowsで/
-set backspace=indent,eol,start  " インデントを消せるようにする
+set backspace=indent,start  " インデントを消せるようにする
 set formatoptions-=ro   " 改行時にコメント継続させない
 set list                " 不可視文字描画
 set listchars=tab:^\_,trail:~,extends:.
 set wildmenu
 set wildmode=list,longest:full
+set t_ut=              " for tmux
 set cursorline
 hi clear CursorLine
 
@@ -122,7 +124,6 @@ hi clear CursorLine
 if &t_Co <= 16
   colorscheme desert
 else
-  set cursorline
   colorscheme hybrid
 endif
 
@@ -172,6 +173,7 @@ if !has('gui_running')
     autocmd VimEnter * imap <Nul> <C-Space>
   augroup END
 endif
+
 
 " =============================================================================
 " キャッシュ
@@ -291,6 +293,7 @@ let g:quickrun_config = {
 \	},
 \  'ruby/watchdogs_checker' : { 'type' : 'watchdogs_checker/rubocop' },
 \  'cpp/watchdogs_checker'  : { 'type' : 'watchdogs_checker/vc' },
+\  'passenger': { 'exec': 'echo "%o %s"'  }
 \}
 
 " VC++をデフォルトにしておく
