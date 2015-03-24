@@ -337,6 +337,17 @@ options     head
         return (xx*xx)*(n&1?x:1);
     }${0}
 
+snippet     pow_with_mod
+abbr        "繰り返し二乗方"
+options     head
+    ll pow_with_mod(ll x,ll n)
+    {
+        if(n==0){ return 1; }
+        if(n==1){ return x; }
+        ll xx = pow_with_mod(x,n/2)%mod;
+        return (((xx*xx)%mod)*(n&1?x:1))%mod;
+    }${0}
+
 snippet     ncr
 abbr        "組み合わせの数"
 options     head
@@ -351,12 +362,12 @@ options     head
 snippet     ncr_with_mod
 abbr        "組み合わせの数 フェルマーの小定理"
 options     head
-    ll ncr(ll n,ll r)
+    ll ncr_with_mod(ll n,ll r)
     {
         ll x=1, y=1;
         for(ll i=n-r+1;i<=n;++i){ x*=i; x%=mod; }
         for(ll i=1;    i<=r;++i){ y*=i; y%=mod; }
-        y = pow(y,mod-2);
+        y = pow_with_mod(y,mod-2);
         return ((x%mod)*y)%mod;
     }${0}
 
