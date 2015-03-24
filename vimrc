@@ -48,13 +48,14 @@ NeoBundle 'Shougo/vimproc.vim', {
 \ }
 
 NeoBundle 'w0ng/vim-hybrid'            " カラースキーム
+NeoBundle 'itchyny/lightline.vim'      " 綺麗なステータスライン
 NeoBundle 'Shougo/unite.vim'           " 検索インタフェース
 NeoBundle 'Shougo/neomru.vim'          " 履歴
 NeoBundle 'Shougo/neocomplete.vim'     " 補完
 NeoBundle 'Shougo/neosnippet.vim'      " スニペット補完
 NeoBundle 'Shougo/neosnippet-snippets' " スニペット集
 NeoBundle 'Shougo/unite-outline'       " コード中のクラスの概要
-NeoBundle 'itchyny/lightline.vim'      " 綺麗なステータスライン
+NeoBundle 'Shougo/vimshell.vim'        " vimshell
 NeoBundle 'thinca/vim-ref'             " クイックリファレンス閲覧
 NeoBundle 'thinca/vim-quickrun'        " バッファのコードを実行
 NeoBundle 'osyo-manga/shabadou.vim'    " QuickRunの拡張
@@ -64,18 +65,18 @@ NeoBundle 'dannyob/quickfixstatus'     " quickfixをコマンドウィンドウ�
 NeoBundle 'KazuakiM/vim-qfsigns'       " quickfixをsign領域に表示
 NeoBundle 'koron/codic-vim'            " 英和辞書(補完にも使う)
 NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
-NeoBundle 'tpope/vim-rails'            " rails
-NeoBundle 'basyura/unite-rails'        " rails
-NeoBundle 'kannokanno/previm'          " プレビュー
-NeoBundle 'tyru/open-browser.vim'      " ブラウザオープン
 NeoBundle 'tpope/vim-surround'         " テキストオブジェクト
 NeoBundle 'tpope/vim-fugitive'         " Git
+NeoBundle 'tpope/vim-rails'            " rails
+NeoBundle 'basyura/unite-rails'        " unite for rails
+NeoBundle 'kannokanno/previm'          " プレビュー
 NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
 NeoBundle 'groenewege/vim-less'        " LESS
 NeoBundle 'kchmck/vim-coffee-script'   " CoffeeScript
 NeoBundle 'AndrewRadev/switch.vim'     " toggling text
 NeoBundle 'ujihisa/unite-colorscheme'  " Uniteでカラースキームを選ぶ
 NeoBundle 'kana/vim-submode'           " submode
+NeoBundle 'zhaocai/quickrun-runner-vimshell.vim' " QuickRunでvimshellを使う
 
 " C# ... 主にUnityに使うっぽい
 NeoBundleLazy 'nosami/Omnisharp', {
@@ -101,7 +102,7 @@ set smartindent         " スマートインデント
 set nobackup            " バックアップなし
 set noswapfile          " スワップなし
 set undofile            " undoファイルあり
-set autochdir           " 開いたファイルのディレクトリに移動
+" set autochdir           " 開いたファイルのディレクトリに移動
 set tags=tags;          " タグの設定
 set laststatus=2        " ステータス行を2行にする
 set cmdheight=2         " コマンド行は1行に
@@ -161,14 +162,14 @@ nnoremap <ESC><ESC> :nohlsearch<CR>
 " nnoremap <C-h> <C-w><
 " nnoremap <C-j> <C-w>+
 " nnoremap <C-k> <C-w>-
-call submode#enter_with('resize', 'n', '', 'sdl', '<C-w>>')
-call submode#enter_with('resize', 'n', '', 'sdh', '<C-w><')
-call submode#enter_with('resize', 'n', '', 'sdj', '<C-w>+')
-call submode#enter_with('resize', 'n', '', 'sdk', '<C-w>-')
-call submode#map('resize', 'n', '', 'sdl', '<C-w>>')
-call submode#map('resize', 'n', '', 'sdh', '<C-w><')
-call submode#map('resize', 'n', '', 'sdj', '<C-w>+')
-call submode#map('resize', 'n', '', 'sdk', '<C-w>-')
+call submode#enter_with('resize_x', 'n', '', 'sdl', '<C-w>>')
+call submode#enter_with('resize_x', 'n', '', 'sdh', '<C-w><')
+call submode#enter_with('resize_y', 'n', '', 'sdj', '<C-w>+')
+call submode#enter_with('resize_y', 'n', '', 'sdk', '<C-w>-')
+call submode#map('resize_x', 'n', '', 'l', '<C-w>>')
+call submode#map('resize_x', 'n', '', 'h', '<C-w><')
+call submode#map('resize_y', 'n', '', 'j', '<C-w>+')
+call submode#map('resize_y', 'n', '', 'k', '<C-w>-')
 " いっぱい移動する
 " nnoremap J 5j
 " nnoremap K 5k
