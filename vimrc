@@ -41,7 +41,7 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 
 NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
-\     'windows' : 'mingw32-make -f make_mingw64.mak',
+\     'windows' : 'tools\\update-dll-mingw',
 \     'mac'     : 'make -f make_mac.mak',
 \     'linux'   : 'make',
 \    },
@@ -79,14 +79,16 @@ NeoBundle 'kana/vim-submode'           " submode
 NeoBundle 'zhaocai/quickrun-runner-vimshell.vim' " QuickRunでvimshellを使う
 
 " C# ... 主にUnityに使うっぽい
-NeoBundleLazy 'nosami/Omnisharp', {
-\   'autoload': {'filetypes': ['cs']},
-\   'build': {
-\     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
-\     'mac': 'xbuild server/OmniSharp.sln',
-\     'unix': 'xbuild server/OmniSharp.sln',
-\   }
-\ }
+if has('MSBuild')
+  NeoBundleLazy 'nosami/Omnisharp', {
+  \   'autoload': {'filetypes': ['cs']},
+  \   'build': {
+  \     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
+  \     'mac': 'xbuild server/OmniSharp.sln',
+  \     'unix': 'xbuild server/OmniSharp.sln',
+  \   }
+  \ }
+endif
 
 call neobundle#end()
 NeoBundleCheck
@@ -153,6 +155,11 @@ let g:submode_timeout = 0
 let g:submode_keep_leaving_key = 1
 let g:submode_keyseqs_to_leave = ['s', 'q']
 
+" サブモード
+nnoremap s <nop>
+inoremap s <nop>
+nnoremap si :lcd %:h<CR>
+
 " エスケープ
 inoremap jj <ESC>
 " <ESC>連打でハイライトを消す
@@ -183,6 +190,10 @@ call submode#enter_with('move', 'n', '', 'sj', '5j')
 call submode#enter_with('move', 'n', '', 'sk', '5k')
 call submode#map('move', 'n', '', 'j', '5j')
 call submode#map('move', 'n', '', 'k', '5k')
+call submode#enter_with('move', 'v', '', 'sj', '5j')
+call submode#enter_with('move', 'v', '', 'sk', '5k')
+call submode#map('move', 'v', '', 'j', '5j')
+call submode#map('move', 'v', '', 'k', '5k')
 " タブの移動
 " nnoremap } gt
 " nnoremap { gT

@@ -19,7 +19,7 @@ augroup END
 
 " フォントとメニュー
 if has('win32') || has('win64')
-  set guifont=Ricty:h14:cSHIFTJIS
-  " set guifont=Ricty\ Diminished:h14:cSHIFTJIS
+  " set guifont=Ricty:h14:cSHIFTJIS
+  set guifont=Ricty\ Diminished:h14:cSHIFTJIS
   let &guioptions = substitute(&guioptions, '[mT]', '', 'g')
 end
