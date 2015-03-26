@@ -157,7 +157,6 @@ let g:submode_keyseqs_to_leave = ['s', 'q']
 
 " サブモード
 nnoremap s <nop>
-inoremap s <nop>
 nnoremap si :lcd %:h<CR>
 
 " エスケープ
@@ -224,6 +223,7 @@ let g:neosnippet#data_directory  = s:home."/cache/neosnippet/"
 let g:neomru#directory_mru_path  = s:home."/cache/neomru/directory"
 let g:neomru#file_mru_path       = s:home."/cache/neomru/file"
 let g:unite_data_directory       = s:home."/cache/unite/"
+let g:vimhell_data_directory     = s:home."/cache/vimhell/"
 let &undodir     = s:home.'/cache/undo'
 " let &backupdir = s:home.'/cache/backup'
 " let &directory = s:home.'/cache/swap'
