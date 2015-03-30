@@ -114,7 +114,7 @@ set showmatch           " 対応する括弧の表示
 set hlsearch            " 検索結果のハイライト
 set history=100         " ヒストリの最大
 set shellslash          " Windowsで/
-set backspace=indent,start  " インデントを消せるようにする
+set backspace=indent,start,eol  " インデントを消せるようにする
 set formatoptions-=ro   " 改行時にコメント継続させない
 set list                " 不可視文字描画
 set listchars=tab:^\_,trail:~,extends:.
@@ -198,7 +198,7 @@ call submode#map('move', 'v', '', 'k', '5k')
 " nnoremap { gT
 call submode#enter_with('tabmode', 'n', '', 'sl', 'gt')
 call submode#enter_with('tabmode', 'n', '', 'sh', 'gT')
-call submode#map('tabmove', 'n', '', 'l', 'gt')
+call submode#map('tabmode', 'n', '', 'l', 'gt')
 call submode#map('tabmode', 'n', '', 'h', 'gT')
 " タグ関係
 nnoremap t <C-t>
