@@ -21,5 +21,6 @@ augroup END
 if has('win32') || has('win64')
   " set guifont=Ricty:h14:cSHIFTJIS
   set guifont=Ricty\ Diminished:h14:cSHIFTJIS
-  let &guioptions = substitute(&guioptions, '[mT]', '', 'g')
+  " let &guioptions = substitute(&guioptions, '[mT]', '', 'g')
+   let &guioptions = substitute(&guioptions, '[T]', '', 'g')
 end

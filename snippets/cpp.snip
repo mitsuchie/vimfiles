@@ -1,613 +1,608 @@
 #-------------------------------------------------------------------------------
 # template
 #-------------------------------------------------------------------------------
-snippet     template_library
-abbr        "競技プログラミング用のテンプレート"
-options     head
-    #include <iostream>
-    #include <vector>
-    #include <list>
-    #include <set>
-    #include <queue>
-    #include <map>
-    #include <algorithm>
-    #include <functional>
-    #include <string>
-    #include <complex>
-    #include <cstdio>
-    #include <cstdlib>
-    #include <cstring>
-    using namespace std;
+snippet	template_library
+abbr	"競技プログラミング用のテンプレート"
+options	head
+	#include <iostream>
+	#include <vector>
+	#include <list>
+	#include <set>
+	#include <queue>
+	#include <map>
+	#include <algorithm>
+	#include <functional>
+	#include <string>
+	#include <complex>
+	#include <cstdio>
+	#include <cstdlib>
+	#include <cstring>
+	using namespace std;
 
-    #define REP(i,p,n) for(int i=p;i<n;++i)
-    #define rep(i,n) REP(i,0,n)
+	#define REP(i,p,n) for(int i=p;i<n;++i)
+	#define rep(i,n) REP(i,0,n)
 
-    typedef long long int ll;
-    typedef pair<int,int> pii;
-    typedef vector<int> vint;
-    typedef vector<pii> vpii;
-    typedef vector<vint> det1;
-    typedef vector<vpii> det2;
+	typedef long long int ll;
+	typedef pair<int,int> pii;
+	typedef vector<int> vint;
+	typedef vector<pii> vpii;
+	typedef vector<vint> det1;
+	typedef vector<vpii> det2;
 
-    int main()
-    {
-        ${1:code}
+	int main()
+	{
+		${0}
 
-        return 0;
-    }
+		return 0;
+	}
 
-snippet     template_library_for_geometry
-abbr        "競技プログラミング幾何ライブラリ"
-options     head
-    typedef complex<double> Point;
-    typedef Point P; // 省略記法
-    const Point cZero(0,0);
+snippet	template_library_for_geometry
+abbr	"競技プログラミング幾何ライブラリ"
+options	head
+	typedef complex<double> Point;
+	typedef Point P; // 省略記法
+	const Point cZero(0,0);
 
-    const double cEPS = 1e-6;
-    const double cINF = 1e+9;
+	const double cEPS = 1e-6;
+	const double cINF = 1e+9;
 
-    double dot(const Point& a,const Point& b)
-    {
-        return (a.real() * b.real() + a.imag() * b.imag());
-    }
+	double dot(const Point& a,const Point& b)
+	{
+		return (a.real() * b.real() + a.imag() * b.imag());
+	}
 
-    double cross(const Point& a,const Point& b)
-    {
-        return (a.real() * b.imag() - a.imag() * b.real());
-    }
+	double cross(const Point& a,const Point& b)
+	{
+		return (a.real() * b.imag() - a.imag() * b.real());
+	}
 
-snippet     is_intersected_lines
-abbr        "点が三角形に内包されているか判定"
-options     head
-    bool is_intersected_lines(const Point& a1,const Point& a2,const Point& b1,const Point& b2)
-    {
-        return (cross(a2-a1,b1-a1) * cross(a2-a1,b2-a1))<cEPS &&
-               (cross(b2-b1,a1-b1) * cross(b2-b1,a2-b1))<cEPS;
-    }
+snippet	is_intersected_lines
+abbr	"点が三角形に内包されているか判定"
+options	head
+	bool is_intersected_lines(const Point& a1,const Point& a2,const Point& b1,const Point& b2)
+	{
+		return (cross(a2-a1,b1-a1) * cross(a2-a1,b2-a1))<cEPS &&
+			   (cross(b2-b1,a1-b1) * cross(b2-b1,a2-b1))<cEPS;
+	}
 
-snippet     is_included_by_triangle
-abbr        "点が三角形に内包されているか判定"
-options     head
-    bool is_included_by_triangle(const Point& p,const Point& a,const Point& b,const Point& c)
-    {
-        double aa = cross(b-a,p-a);
-        double bb = cross(c-b,p-b);
-        double cc = cross(a-c,p-c);
+snippet	is_included_by_triangle
+abbr	"点が三角形に内包されているか判定"
+options	head
+	bool is_included_by_triangle(const Point& p,const Point& a,const Point& b,const Point& c)
+	{
+		double aa = cross(b-a,p-a);
+		double bb = cross(c-b,p-b);
+		double cc = cross(a-c,p-c);
 
-        return (aa<=-cEPS && bb<=-cEPS && cc<=-cEPS) || (cEPS<=aa && cEPS<=bb && cEPS<=cc); // 線上や点上を含まない
-        //return (aa<cEPS && bb<cEPS && cc<cEPS) || (-cEPS<aa && -cEPS<bb && -cEPS<cc);     // 線上や点上含む
-    }
+		return (aa<=-cEPS && bb<=-cEPS && cc<=-cEPS) || (cEPS<=aa && cEPS<=bb && cEPS<=cc); // 線上や点上を含まない
+		//return (aa<cEPS && bb<cEPS && cc<cEPS) || (-cEPS<aa && -cEPS<bb && -cEPS<cc);	 // 線上や点上含む
+	}
 
-snippet     foreach_triangle
-abbr        "三角形ループ(x[i],y[i]),(x[j],y[j]),(x[k],y[k])"
-alias       rep_triangle
-alias       repeat_triangle
-options     head
-    REP(i,0,n) REP(j,i+1,n) REP(k,j+1,n)
-    {
-        Point a(x[i],y[i]), b(x[j],y[j]), c(x[k],y[k]);
+snippet	foreach_triangle
+abbr	"三角形ループ(x[i],y[i]),(x[j],y[j]),(x[k],y[k])"
+alias	rep_triangle
+alias	repeat_triangle
+options	head
+	REP(i,0,n) REP(j,i+1,n) REP(k,j+1,n)
+	{
+		Point a(x[i],y[i]), b(x[j],y[j]), c(x[k],y[k]);
 
-        ${0}
-    }
+		${0}
+	}
 
 #-------------------------------------------------------------------------------
 # structure
 #-------------------------------------------------------------------------------
-snippet     edge
-abbr        "グラフの辺の構造体"
-alias       Edge
-options     head
-    struct Edge
-    {
-        int from, to, cost;
+snippet	edge
+abbr	"グラフの辺の構造体"
+alias	Edge
+options	head
+	struct Edge
+	{
+		int from, to, cost;
 
-        Edge(){}
-        Edge(int _from,int _to,int _cost):from(_from), to(_to), cost(_cost){}
-        void input(int d=0){ cin>>from>>to>>cost; from-=d; to-=d; }
-        void set(int _from,int _to,int _cost){ from=_from; to=_to; cost=_cost; }
+		Edge(){}
+		Edge(int _from,int _to,int _cost):from(_from), to(_to), cost(_cost){}
+		void input(int d=0){ cin>>from>>to>>cost; from-=d; to-=d; }
+		void set(int _from,int _to,int _cost){ from=_from; to=_to; cost=_cost; }
 
-        const bool operator<(const Edge& e) const { return cost<e.cost; }
-    };
+		const bool operator<(const Edge& e) const { return cost<e.cost; }
+	};
 
-snippet     UnionFind
-abbr        "Union-Find(グループ管理)"
-alias       unionfind
-alias       union-find
-options     head
-    struct UnionFind
-    {
-        vector<int> uf;
-        // 親なし(-1)で初期化しておく
-        void init(int n){ uf.assign(n,-1); }
-        // 親がいないなら自分を返す, 親がいたら経路圧縮して返す(root直下に繋ぐ)
-        int find(int x){ return uf[x]<0 ? x : (uf[x]=this->find(uf[x])); }
-        // 繋げようとする(union/予約後なんですよね,これが)
-        bool connect(int a,int b)
-        {
-            a = this->find(a); // aのルートノード
-            b = this->find(b); // bのルートノード
-            if(a!=b){ uf[b]=a; return true; } // 新しくつなげた
-            return false; // もうつながってる
-        }
+snippet	UnionFind
+abbr	"Union-Find(グループ管理)"
+alias	unionfind
+alias	union-find
+options	head
+	struct UnionFind
+	{
+		vector<int> uf;
+		// 親なし(-1)で初期化しておく
+		void init(int n){ uf.assign(n,-1); }
+		// 親がいないなら自分を返す, 親がいたら経路圧縮して返す(root直下に繋ぐ)
+		int find(int x){ return uf[x]<0 ? x : (uf[x]=this->find(uf[x])); }
+		// 繋げようとする(union/予約後なんですよね,これが)
+		bool connect(int a,int b)
+		{
+			a = this->find(a); // aのルートノード
+			b = this->find(b); // bのルートノード
+			if(a!=b){ uf[b]=a; return true; } // 新しくつなげた
+			return false; // もうつながってる
+		}
 
-    } uf;
+	} uf;
 
-snippet     SegmentTree
-abbr        "SegmentTree(区間管理)"
-options     head
-alias       segtree
-    struct SegmentTree
-    {
-        typedef unsigned int u32;
-        u32 msb(u32 x){ u32 l=0, r=32, m=0; while(l+1<r){ m=(l+r)>>1; (x>>m?l:r)=m; } return l; }
+snippet	SegmentTree
+abbr	"SegmentTree(区間管理)"
+options	head
+alias	segtree
+	struct SegmentTree
+	{
+		typedef unsigned int u32;
+		u32 msb(u32 x){ u32 l=0, r=32, m=0; while(l+1<r){ m=(l+r)>>1; (x>>m?l:r)=m; } return l; }
 
-        // 親子関係 => 親:(p-1)/2, 左:p*2+1, 右:p*2+2
-        vector<int> data;
-        void init(int n,int v=0){ data.assign((1<<(msb(n-1)+1))*2-1,v); }
-        int  size() const { return (data.size()+1)/2; }
-        // 葉から木全体の値を更新する
-        void add(int p,int x){ p+=size()-1; data[p]+=x; while(p>0){ p=(p-1)/2; data[p]+=x; } }
-        // 二分木の構造を利用して区間の値を取得する
-        int query(int a,int b){ return query(a,b,0,0,size()-1); }
-        int query(int a,int b,int k,int l,int r)
-        {
-            if(r<=a||b<=l){ return 0; }
-            if(a<=l&&r<=b){ return data[k]; }
+		// 親子関係 => 親:(p-1)/2, 左:p*2+1, 右:p*2+2
+		vector<int> data;
+		void init(int n,int v=0){ data.assign((1<<(msb(n-1)+1))*2-1,v); }
+		int  size() const { return (data.size()+1)/2; }
+		// 葉から木全体の値を更新する
+		void add(int p,int x){ p+=size()-1; data[p]+=x; while(p>0){ p=(p-1)/2; data[p]+=x; } }
+		// 二分木の構造を利用して区間の値を取得する
+		int query(int a,int b){ return query(a,b,0,0,size()-1); }
+		int query(int a,int b,int k,int l,int r)
+		{
+			if(r<=a||b<=l){ return 0; }
+			if(a<=l&&r<=b){ return data[k]; }
 
-            return query(a,b,k*2+1,l,(l+r)/2) + query(a,b,k*2+2,(l+r)/2,r);
-        }
+			return query(a,b,k*2+1,l,(l+r)/2) + query(a,b,k*2+2,(l+r)/2,r);
+		}
 
-    } segtree;
+	} segtree;
 
-snippet     RangeMinimumQuery
-abbr        "RMQ by SegmentTree"
-options     head
-alias       segment_tree_for_rmq
-alias       segtree_for_rmq
-    struct SegmentTree
-    {
-        typedef unsigned int u32;
-        u32 msb(u32 x){ u32 l=0, r=32, m=0; while(l+1<r){ m=(l+r)>>1; (x>>m?l:r)=m; } return l; }
+snippet	RangeMinimumQuery
+abbr	"RMQ by SegmentTree"
+options	head
+alias	segment_tree_for_rmq
+alias	segtree_for_rmq
+	struct SegmentTree
+	{
+		typedef unsigned int u32;
+		u32 msb(u32 x){ u32 l=0, r=32, m=0; while(l+1<r){ m=(l+r)>>1; (x>>m?l:r)=m; } return l; }
 
-        // 親子関係 => 親:(p-1)/2, 左:p*2+1, 右:p*2+2
-        vector<int> data;
-        void init(int n,int v=INT_MAX){ data.assign((1<<(msb(n-1)+1))*2-1,v); }
-        int  size() const { return (data.size()+1)/2; }
-        // 葉から木全体の値を更新する
-        void add(int p,int x){ p+=size()-1; data[p]=x; while(p>0){ p=(p-1)/2; data[p]=min(data[p*2+1],data[p*2-1]); } }
-        // 二分木の構造を利用して区間の値を取得する
-        int query(int a,int b){ return query(a,b,0,0,size()-1); }
-        int query(int a,int b,int k,int l,int r)
-        {
-            if(r<=a||b<=l){ return INT_MAX; }
-            if(a<=l&&r<=b){ return data[k]; }
+		// 親子関係 => 親:(p-1)/2, 左:p*2+1, 右:p*2+2
+		vector<int> data;
+		void init(int n,int v=INT_MAX){ data.assign((1<<(msb(n-1)+1))*2-1,v); }
+		int  size() const { return (data.size()+1)/2; }
+		// 葉から木全体の値を更新する
+		void add(int p,int x){ p+=size()-1; data[p]=x; while(p>0){ p=(p-1)/2; data[p]=min(data[p*2+1],data[p*2-1]); } }
+		// 二分木の構造を利用して区間の値を取得する
+		int query(int a,int b){ return query(a,b,0,0,size()-1); }
+		int query(int a,int b,int k,int l,int r)
+		{
+			if(r<=a||b<=l){ return INT_MAX; }
+			if(a<=l&&r<=b){ return data[k]; }
 
-            return min(query(a,b,k*2+1,l,(l+r)/2), query(a,b,k*2+2,(l+r)/2,r));
-        }
+			return min(query(a,b,k*2+1,l,(l+r)/2), query(a,b,k*2+2,(l+r)/2,r));
+		}
 
-    } segtree;
+	} segtree;
 
-snippet     BinaryIndexedTree
-abbr        "BinaryIndexedTree(領域総和クエリ)"
-options     head
-alias       bit
-alias       fenwick
-    struct BinaryIndexedTree
-    {
-        vector<int> data;
+snippet	BinaryIndexedTree
+abbr	"BinaryIndexedTree(領域総和クエリ)"
+options	head
+alias	bit
+alias	fenwick
+	struct BinaryIndexedTree
+	{
+		vector<int> data;
 
-        void init(int n){ data.assign(n+1,0); }
-        // 座標[p]の値を更新する, (p&-p)は最下位ビットを示す
-        void add(int p,int x){ while(p<data.size()){ data[p]+=x; p+=(p&-p); } }
-        // 領域[0,p]の総和を求める
-        int sum(int p){ int res=0; while(p>0){ res+=data[p]; p-=(p&-p); } return res; } 
-        // 領域[l,r]の総和を求める
-        int sum(int l,int r){ return sum(r) - (l?sum(l-1):0); }
-        // 総和がx以下になる最大の領域[0,p]を検索する (x番目に小さい値とか)
-        int search(int x)
-        {
-            int lhs = 0, rhs = data.size()-1, mid = 0;
+		void init(int n){ data.assign(n+1,0); }
+		// 座標[p]の値を更新する, (p&-p)は最下位ビットを示す
+		void add(int p,int x){ while(p<data.size()){ data[p]+=x; p+=(p&-p); } }
+		// 領域[0,p]の総和を求める
+		int sum(int p){ int res=0; while(p>0){ res+=data[p]; p-=(p&-p); } return res; } 
+		// 領域[l,r]の総和を求める
+		int sum(int l,int r){ return sum(r) - (l?sum(l-1):0); }
+		// 総和がx以下になる最大の領域[0,p]を検索する (x番目に小さい値とか)
+		int search(int x)
+		{
+			int lhs = 0, rhs = data.size()-1, mid = 0;
 
-            while(lhs+1<rhs)
-            {
-                int mid = (lhs+rhs)/2;
-                if(sum(0,mid)<x){ lhs = mid; } else { rhs = mid; }
-            }
+			while(lhs+1<rhs)
+			{
+				int mid = (lhs+rhs)/2;
+				if(sum(0,mid)<x){ lhs = mid; } else { rhs = mid; }
+			}
 
-            return rhs;
-        }
+			return rhs;
+		}
 
-    } bit;
+	} bit;
 
 #-------------------------------------------------------------------------------
 # algorithm
 #-------------------------------------------------------------------------------
-snippet     gcd
-abbr        "__gcd (gcc extend)"
-options     head
-    __gcd(${1},${2})${0}
+snippet	gcd
+abbr	"__gcd (gcc extend)"
+options	head
+	__gcd(${1},${2})${0}
 
-snippet     warshall_floyd
-abbr        "ワーシャルフロイト法 O(n^3)
-options     head
-    const int MAXN=64;
-    ll costs[MAXN][MAXN];
+snippet	warshall_floyd
+abbr	"ワーシャルフロイト法 O(n^3)
+options	head
+	const int MAXN=64;
+	ll costs[MAXN][MAXN];
 
-    void warshall_floyd(int n)
-    {
-        rep(k,n) rep(i,n) rep(j,n)
-        {
-            costs[i][j] = min(costs[i][j], costs[i][k]+dist[k][j]);
-        }
-    }
+	void warshall_floyd(int n)
+	{
+		rep(k,n) rep(i,n) rep(j,n)
+		{
+			costs[i][j] = min(costs[i][j], costs[i][k]+dist[k][j]);
+		}
+	}
 
 
-snippet     dijkstra2
-abbr        "拡張ダイクストラ法 O((n+v)logv)"
-alias       dk2
-options     head
-    const int MAXN=64;   // 頂点数
-    const int MAXC=1024; // 拡張数
-    const ll INF=1<<30;  // 最大数
-    ll dist[MAXN][MAXC]; // 距離
-    vector<pii> G[MAXN]; // グラフ
+snippet	dijkstra2
+abbr	"拡張ダイクストラ法 O((n+v)logv)"
+alias	dk2
+options	head
+	const int MAXN=64;   // 頂点数
+	const int MAXC=1024; // 拡張数
+	const ll INF=1<<30;  // 最大数
+	ll dist[MAXN][MAXC]; // 距離
+	vector<pii> G[MAXN]; // グラフ
 
-    ll dijkstra2(int s,int t,int c)
-    {
-        rep(i,MAXN){ rep(j,MAXC){ dist[i][j]=INF; } }
-        dist[s][c]=0;
+	ll dijkstra2(int s,int t,int c)
+	{
+		rep(i,MAXN){ rep(j,MAXC){ dist[i][j]=INF; } }
+		dist[s][c]=0;
 
-        priority_queue< pii > Q;
-        Q.push(make_pair(c,s)); // 拡張数を最大にする(逆なら符号反転)
+		priority_queue< pii > Q;
+		Q.push(make_pair(c,s)); // 拡張数を最大にする(逆なら符号反転)
 
-        while(!Q.empty())
-        {
-            pii element = Q.top(); Q.pop();
-            const int cc = element.first;
-            const int pp = element.second;
+		while(!Q.empty())
+		{
+			pii element = Q.top(); Q.pop();
+			const int cc = element.first;
+			const int pp = element.second;
 
-            rep(i,G[pp].size())
-            {
-                // 通常時
-                {
-                    const int tt = G[pp][i].first;
-                    const ll  ww = dist[pp][cc]+ll(G[pp][i].second);
-                    if(ww<dist[tt][cc]){ dist[tt][cc]=ww; Q.push(pii(cc,tt)); }
-                }
+			rep(i,G[pp].size())
+			{
+				// 通常時
+				{
+					const int tt = G[pp][i].first;
+					const ll  ww = dist[pp][cc]+ll(G[pp][i].second);
+					if(ww<dist[tt][cc]){ dist[tt][cc]=ww; Q.push(pii(cc,tt)); }
+				}
 
-                if(cc>0) // 拡張時
-                {
-                    const int tt = G[pp][i].first;
-                    const ll  ww = dist[pp][cc]-ll(G[pp][i].second);
-                    if(ww<dist[tt][cc-1]){ dist[tt][cc-1]=ww; Q.push(pii(cc-1,tt)); }
-                }
-            }
-        }
+				if(cc>0) // 拡張時
+				{
+					const int tt = G[pp][i].first;
+					const ll  ww = dist[pp][cc]-ll(G[pp][i].second);
+					if(ww<dist[tt][cc-1]){ dist[tt][cc-1]=ww; Q.push(pii(cc-1,tt)); }
+				}
+			}
+		}
 
-        ll res=INF;
-        rep(i,c+1){ res=min(res,dist[t][i]); } // 拡張された中で最小を抽出
-        return res;
-    }
-    
-snippet     dijkstra
-abbr        "ダイクストラ法 O((n+v)logv)"
-alias       dk1
-options     head
-    const int MAXN=64;  // 頂点数
-    const ll INF=1<<30; // 最大数
-    ll  costs[MAXN];    // コスト(距離)
-    int backs[MAXN];    // 経路復元
-    vector<pair<int,ll> > G[MAXN]; // 隣接リスト[from,to,cost]
+		ll res=INF;
+		rep(i,c+1){ res=min(res,dist[t][i]); } // 拡張された中で最小を抽出
+		return res;
+	}
 
-    ll dijkstra(int start,int goal)
-    {
-        rep(i,MAXN){ costs[i]=INF; } // INFが返ってきたらstart-goal経路がない
-        costs[start] = 0;
+snippet	dijkstra
+abbr	"ダイクストラ法 O((n+v)logv)"
+alias	dk1
+options	head
+	const int MAXN=64;  // 頂点数
+	const ll INF=1<<30; // 最大数
+	ll  costs[MAXN];	// コスト(距離)
+	int backs[MAXN];	// 経路復元
+	vector<pair<int,ll> > G[MAXN]; // 隣接リスト[from,to,cost]
 
-        struct GI { bool operator()(int a,int b){ return costs[a]<costs[b]; } };
+	ll dijkstra(int start,int goal)
+	{
+		rep(i,MAXN){ costs[i]=INF; } // INFが返ってきたらstart-goal経路がない
+		costs[start] = 0;
 
-        // 未処理頂点キュー
-        priority_queue<int,vector<int>,GI> Q;
-        Q.push(start);
+		struct GI { bool operator()(int a,int b){ return costs[a]<costs[b]; } };
 
-        while(!Q.empty())
-        {
-            const int now = Q.top();
-            Q.pop();
+		// 未処理頂点キュー
+		priority_queue<int,vector<int>,GI> Q;
+		Q.push(start);
 
-            rep(i,G[now].size())
-            {
-                const int to   = G[now][i].first;
-                const ll  cost = costs[now] + G[now][i].second;
+		while(!Q.empty())
+		{
+			const int now = Q.top();
+			Q.pop();
 
-                if(cost<costs[to]){ costs[to]=cost; backs[to]=now; Q.push(to); }
-            }
-        }
-        return costs[goal];
-    }
+			rep(i,G[now].size())
+			{
+				const int to   = G[now][i].first;
+				const ll  cost = costs[now] + G[now][i].second;
 
-snippet     pow
-abbr        "繰り返し二乗方"
-options     head
-    ll pow(ll x,ll n)
-    {
-        if(n==0){ return 1; }
-        if(n==1){ return x; }
-        ll xx = pow(x,n/2);
-        return (xx*xx)*(n&1?x:1);
-    }${0}
+				if(cost<costs[to]){ costs[to]=cost; backs[to]=now; Q.push(to); }
+			}
+		}
+		return costs[goal];
+	}
 
-snippet     pow_with_mod
-abbr        "繰り返し二乗方"
-options     head
-    ll pow_with_mod(ll x,ll n)
-    {
-        if(n==0){ return 1; }
-        if(n==1){ return x; }
-        ll xx = pow_with_mod(x,n/2)%mod;
-        return (((xx*xx)%mod)*(n&1?x:1))%mod;
-    }${0}
+snippet	pow
+abbr	"繰り返し二乗方"
+options	head
+	ll pow(ll x,ll n)
+	{
+		if(n==0){ return 1; }
+		if(n==1){ return x; }
+		ll xx = pow(x,n/2);
+		return (xx*xx)*(n&1?x:1);
+	}${0}
 
-snippet     ncr
-abbr        "組み合わせの数"
-options     head
-    ll ncr(ll n,ll r)
-    {
-        ll x=1, y=1;
-        for(ll i=n-r+1;i<=n;++i){ x*=i; }
-        for(ll i=1;    i<=r;++i){ y*=i; }
-        return (x/y);
-    }${0}
+snippet	pow_with_mod
+abbr	"繰り返し二乗方"
+options	head
+	ll pow_with_mod(ll x,ll n)
+	{
+		if(n==0){ return 1; }
+		if(n==1){ return x; }
+		ll xx = pow_with_mod(x,n/2)%mod;
+		return (((xx*xx)%mod)*(n&1?x:1))%mod;
+	}${0}
 
-snippet     ncr_with_mod
-abbr        "組み合わせの数 フェルマーの小定理"
-options     head
-    ll ncr_with_mod(ll n,ll r)
-    {
-        ll x=1, y=1;
-        for(ll i=n-r+1;i<=n;++i){ x*=i; x%=mod; }
-        for(ll i=1;    i<=r;++i){ y*=i; y%=mod; }
-        y = pow_with_mod(y,mod-2);
-        return ((x%mod)*y)%mod;
-    }${0}
+snippet	ncr
+abbr	"組み合わせの数"
+options	head
+	ll ncr(ll n,ll r)
+	{
+		ll x=1, y=1;
+		for(ll i=n-r+1;i<=n;++i){ x*=i; }
+		for(ll i=1;	i<=r;++i){ y*=i; }
+		return (x/y);
+	}${0}
 
-snippet     most_significant_bit
-abbr        "最上位ビット"
-alias       msb
-options     head
-    u32 msb(u32 x)
-    {
-        u32 lhs=0, rhs=32, mid=0;
-        while(lhs+1<rhs){ mid=(lhs+rhs)>>1; (x>>mid?lhs:rhs)=mid; }
-        return lhs;
-    }
+snippet	ncr_with_mod
+abbr	"組み合わせの数 フェルマーの小定理"
+options	head
+	ll ncr_with_mod(ll n,ll r)
+	{
+		ll x=1, y=1;
+		for(ll i=n-r+1;i<=n;++i){ x*=i; x%=mod; }
+		for(ll i=1;	i<=r;++i){ y*=i; y%=mod; }
+		y = pow_with_mod(y,mod-2);
+		return ((x%mod)*y)%mod;
+	}${0}
 
-snippet     doubling
-abbr        "ダブリング (lca等に活用)"
-options     head
-    // int fs[MAXM][MAXN]; // # => f0...fM (f:v->v の写像)
+snippet	most_significant_bit
+abbr	"最上位ビット"
+alias	msb
+options	head
+	u32 msb(u32 x)
+	{
+		u32 lhs=0, rhs=32, mid=0;
+		while(lhs+1<rhs){ mid=(lhs+rhs)>>1; (x>>mid?lhs:rhs)=mid; }
+		return lhs;
+	}
+
+snippet	doubling
+abbr	"ダブリング (lca等に活用)"
+options	head
+	// int fs[MAXM][MAXN]; // # => f0...fM (f:v->v の写像)
 
 	rep(i,MAXM-1) rep(j,N)
 	{
 		fs[i+1][j] = fs[i][j]==-1 ? -1 : fs[i][fs[i][j]];
 	}
 
-snippet     lowest_common_ancestor
-abbr        "最近共通先祖"
-alias       lca
-options     head
-    // int fs[MAXM][MAXN]; // # => f0...fM (f:v->v の写像)
+snippet	lowest_common_ancestor
+abbr	"最近共通先祖"
+alias	lca
+options	head
+	// int fs[MAXM][MAXN]; // # => f0...fM (f:v->v の写像)
 
-    int lca(int a,int b,int depth_a,int depth_b)
-    {
-        // 深さを揃える
-        if(depth_a!=depth_b)
-        {
-            const bool ab = depth_a < depth_b;
-            int len = ab ? depth_b-depth_a : depth_a-depth_b;
-            int c   = ab ? b : a;
-            rep(i,MAXM){ if((len>>i)&1){ c = fs[i][c]; } }
-            a = ab ? a : c;
-            b = ab ? c : b;
-        }
-        if( a == b ){ return a; }
+	int lca(int a,int b,int depth_a,int depth_b)
+	{
+		// 深さを揃える
+		if(depth_a!=depth_b)
+		{
+			const bool ab = depth_a < depth_b;
+			int len = ab ? depth_b-depth_a : depth_a-depth_b;
+			int c   = ab ? b : a;
+			rep(i,MAXM){ if((len>>i)&1){ c = fs[i][c]; } }
+			a = ab ? a : c;
+			b = ab ? c : b;
+		}
+		if( a == b ){ return a; }
 
-        // ダブリング
-        for(int i=MAXM-1;i>=0;--i) if(fs[i][a]!=fs[i][b])
-        {
-            a = fs[i][a];
-            b = fs[i][b];
-        }
-        return fs[0][a];
-    }
+		// ダブリング
+		for(int i=MAXM-1;i>=0;--i) if(fs[i][a]!=fs[i][b])
+		{
+			a = fs[i][a];
+			b = fs[i][b];
+		}
+		return fs[0][a];
+	}
 
-snippet     kruscal
-abbr        "クラスカル法"
-alias       minimum-spanning-tree
-options     head
-    ll kruscal(int n,vector<Edge>& edges) // need (unionfind, edge)
-    {
-        ll res = 0;
+snippet	kruscal
+abbr	"クラスカル法"
+alias	minimum-spanning-tree
+options	head
+	ll kruscal(int n,vector<Edge>& edges) // need (unionfind, edge)
+	{
+		ll res = 0;
 
-        sort(edges.begin(), edges.end());
-        uf.init(n);
+		sort(edges.begin(), edges.end());
+		uf.init(n);
 
-        rep(i,edges.size()) // 各辺に注目する(コストの小さい順)
-        {
-            if(uf.connect(edges[i].from, edges[i].to))
-            {
-                res+=edges[i].cost; // 連結成分でなければ辺を結ぶ
-            }
-        }
+		rep(i,edges.size()) // 各辺に注目する(コストの小さい順)
+		{
+			if(uf.connect(edges[i].from, edges[i].to))
+			{
+				res+=edges[i].cost; // 連結成分でなければ辺を結ぶ
+			}
+		}
 
-        return res;
-    }
+		return res;
+	}
 
-snippet     prim
-abbr        "プリム法"
-options     head
-    ll prim(det2& det) // need (edge)
-    {
-        int left = det.size()-1;
+snippet	prim
+abbr	"プリム法"
+options	head
+	ll prim(det2& det) // need (edge)
+	{
+		int left = det.size()-1;
 
-        vector<int> v(det.size(),0);
-        v[0] = 1; // 開始頂点
+		vector<int> v(det.size(),0);
+		v[0] = 1; // 開始頂点
 
-        // コストでソートされるキューを使う [cost,to]
-        priority_queue<pii,vector<pii>,greater<pii> > Q;
-        for(auto e:det[0]){ Q.push(e); }
+		// コストでソートされるキューを使う [cost,to]
+		priority_queue<pii,vector<pii>,greater<pii> > Q;
+		for(auto e:det[0]){ Q.push(e); }
 
-        ll res = 0;
-        while(!Q.empty() && left) // 全頂点に到達できるまで続ける
-        {
-            const int cost = Q.top().first;
-            const int to   = Q.top().second;
-            Q.pop();
+		ll res = 0;
+		while(!Q.empty() && left) // 全頂点に到達できるまで続ける
+		{
+			const int cost = Q.top().first;
+			const int to   = Q.top().second;
+			Q.pop();
 
-            if(v[to]){ continue; } else { v[to]=1; --left; }
-            res += cost;
+			if(v[to]){ continue; } else { v[to]=1; --left; }
+			res += cost;
 
-            if(left==0){ break; }
+			if(left==0){ break; }
 
-            // 注目している頂点から出ている辺で回す(到達済みは除く)
-            for(auto e:det[to]){ if(!v[e.second]){ Q.push(e); } }
-        }
+			// 注目している頂点から出ている辺で回す(到達済みは除く)
+			for(auto e:det[to]){ if(!v[e.second]){ Q.push(e); } }
+		}
 
-        return res;
-    }
+		return res;
+	}
 
-snippet     BinarySearch
-abbr        "二分探索"
-options     head
-    int lhs = 0, rhs = MAXN-1;
+snippet	BinarySearch
+abbr	"二分探索"
+options	head
+	int lhs = 0, rhs = MAXN-1;
 
-    while(lhs+1<rhs)
-    {
-        int mid = (lhs+rhs)/2;
+	while(lhs+1<rhs)
+	{
+		int mid = (lhs+rhs)/2;
 
-        if(${1:condition}){ lhs = mid; }
-        else { rhs = mid; }
-    }
+		if(${1:condition}){ lhs = mid; }
+		else { rhs = mid; }
+	}
 
-    int res = rhs;
+	int res = rhs;
 
 #-------------------------------------------------------------------------------
 # cpp utils
 #-------------------------------------------------------------------------------
-snippet     line
-abbr        "commentout line"
-options     head
-    //------------------------------------------------------------------------------
+snippet	line
+abbr	"commentout line"
+options	head
+	//------------------------------------------------------------------------------
 
-snippet     line_equal
-abbr        "commentout line"
-options     head
-    //==============================================================================
+snippet	line_equal
+abbr	"commentout line"
+options	head
+	//==============================================================================
 
-snippet     size
-abbr        size() 括弧補完
-options     head
-    size()${0}
+snippet	size
+abbr	"size() 括弧補完"
+options	head
+	size()${0}
 
-snippet     sort
-abbr        sort(x.begin(), x.end())
-options     head
-    sort(${1}.begin(), $1.end())${0}
+snippet	sort
+abbr	sort(x.begin(), x.end())
+options	head
+	sort(${1}.begin(), $1.end())${0}
 
-snippet     find
-abbr        count(arr.begin(),arr.end(),x)
-alias       count
-options     head
-    count(${1}.begin(),$1.end(),${2})${0}
+snippet	find
+abbr	count(arr.begin(),arr.end(),x)
+alias	count
+options	head
+	count(${1}.begin(),$1.end(),${2})${0}
 
-snippet     answer
-abbr        "int ans = 0;"
-alias       int_ans
-options     head
-    int ans = 0;
-    ${0}
+snippet	answer
+abbr	"int ans = 0;"
+alias	int_ans
+options	head
+	int ans = 0;
+	${0}
 
-snippet     input_n
-abbr        "int N; cin>>N;"
-options     head
-    int N; cin>>N;
-    ${0}
-    
-snippet     input_nm
-abbr        "int n,m; cin>>n>>m;"
-options     head
-    int N,M; cin>>N>>M;
-    ${0}
+snippet	input_n
+abbr	"int N; cin>>N;"
+options	head
+	int N; cin>>N;
+	${0}
+	
+snippet	input_nm
+abbr	"int n,m; cin>>n>>m;"
+options	head
+	int N,M; cin>>N>>M;
+	${0}
 
-snippet     repview
-abbr        'vectorの中身表示: rep(i,n){ cout<<x[i]<<","; } cout<<endl;'
-options     head
-    rep(i,${1}.size()){ cout<<$1[i]<<","; } cout<<endl;
-    ${0}
-
-snippet     forview
-abbr        'vectorの中身表示: for(i;i<n;++i){ cout<<x[i]<<","; } cout<<endl;'
-options     head
-    for(int i=0,n=${1}.size();i<n;++i){ cout<<$1[i]<<","; } cout<<endl;
-    ${0}
+snippet	repview
+abbr	'vectorの中身表示: rep(i,n){ cout<<x[i]<<","; } cout<<endl;'
+alias   dump_vector
+options	head
+	rep(i,${1}.size()){ cout<<$1[i]<<","; } cout<<endl;
+	${0}
 
 #-------------------------------------------------------------------------------
-snippet     singleton
-abbr        "singleton"
-options     head
-    public:
-    static ${1:classname}* instance();
-    static void createInstance();
-    static void destroyInstance();
+snippet	singleton
+abbr	"singleton"
+options	head
+	public:
+	static ${1:classname}* instance();
+	static void createInstance();
+	static void destroyInstance();
 
-    namespace { $1* p$1Instance; };
-    $1* $1::instance()
-    {
-        assert(p$1Instance!=nullptr);
-        return p$1Instance;
-    }
-    void $1::createInstance()
-    {
-        assert(p$1Instance==nullptr);
-        p$1Instance = new $1();
-    }
-    void $1::destroyInstance()
-    {
-        assert(p$1Instance!=nullptr);
-        delete p$1Instance;
-        p$1Instance = 0;
-    }
-    inline $1& ${2:cliped}(){ return *$1::instance(); }
+	namespace { $1* p$1Instance; };
+	$1* $1::instance()
+	{
+		assert(p$1Instance!=nullptr);
+		return p$1Instance;
+	}
+	void $1::createInstance()
+	{
+		assert(p$1Instance==nullptr);
+		p$1Instance = new $1();
+	}
+	void $1::destroyInstance()
+	{
+		assert(p$1Instance!=nullptr);
+		delete p$1Instance;
+		p$1Instance = 0;
+	}
+	inline $1& ${2:cliped}(){ return *$1::instance(); }
 
 
 #-------------------------------------------------------------------------------
-snippet     namespace
-abbr        "namespace"
-options     head
-    namespace ${1:name}
-    {
-        ${0:code}
+snippet	namespace
+abbr	"namespace"
+options	head
+	namespace ${1:name}
+	{
+		${0:code}
 
-    }; // namespace $1
+	}; // namespace $1
 
 #-------------------------------------------------------------------------------
-snippet     class
-abbr        "class"
-options     head
-    //==============================================================================
-    //
-    // Class:  ${1:classname}
-    // Author: ${2:username}
-    //
-    //==============================================================================
-    class $1
-    {
-    public:
-        explicit $1();
-        virtual ~$1();
+snippet	class
+abbr	"class"
+options	head
+	//==============================================================================
+	//
+	// Class:  ${1:classname}
+	// Author: ${2:username}
+	//
+	//==============================================================================
+	class $1
+	{
+	public:
+		explicit $1();
+		virtual ~$1();
 
-        ${0:code}
-    };
-    $1::$1(){}
-    $1::~$1(){}
+		${0:code}
+	};
+	$1::$1(){}
+	$1::~$1(){}
 

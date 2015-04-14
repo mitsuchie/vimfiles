@@ -157,7 +157,13 @@ let g:submode_keyseqs_to_leave = ['s', 'q']
 
 " サブモード
 nnoremap s <nop>
-nnoremap si :lcd %:h<CR>
+nnoremap <silent> si :lcd %:h<CR>
+nnoremap <silent> ss :split<CR>
+nnoremap <silent> sv :vsplit<CR>
+nnoremap <silent> sH <C-w>H<CR>
+nnoremap <silent> sJ <C-w>J<CR>
+nnoremap <silent> sK <C-w>K<CR>
+nnoremap <silent> sL <C-w>L<CR>
 
 " エスケープ
 inoremap jj <ESC>
@@ -224,7 +230,8 @@ let g:neomru#directory_mru_path  = s:home."/cache/neomru/directory"
 let g:neomru#file_mru_path       = s:home."/cache/neomru/file"
 let g:unite_data_directory       = s:home."/cache/unite/"
 let g:vimhell_data_directory     = s:home."/cache/vimhell/"
-let &undodir     = s:home.'/cache/undo'
+let &undodir = s:home.'/cache/undo'
+let &viminfo = &viminfo.',n'.s:home.'/cache/_viminfo'
 " let &backupdir = s:home.'/cache/backup'
 " let &directory = s:home.'/cache/swap'
 
@@ -334,7 +341,6 @@ let g:quickrun_config = {
 \	},
 \  'ruby/watchdogs_checker' : { 'type' : 'watchdogs_checker/rubocop' },
 \  'cpp/watchdogs_checker'  : { 'type' : 'watchdogs_checker/vc' },
-\  'passenger': { 'exec': 'echo "%o %s"'  }
 \}
 
 " VC++をデフォルトにしておく
@@ -375,8 +381,6 @@ let g:unite_source_history_yank_enable = 1  " ヤンク履歴とか使えるよ�
 let g:unite_source_history_yank_limit = 100 " 履歴の最大を設定
 
 " , にショートカットを割り振っておく
-" Everythingを起動している必要あり、加えて別途es.exeをDLしてパスを通す
-nnoremap <silent> ,a  :<C-u>Unite everything/async -buffer-name=everything<CR>
 " 最近開いたファイルとかその他諸々
 nnoremap <silent> ,f :<C-u>Unite buffer file_mru file -buffer-name=searcher<CR>
 nnoremap <silent> ,,f :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
@@ -392,9 +396,13 @@ nnoremap <silent> ,d :<C-u>Unite outline -buffer-name=outline<CR>
 " プロジェクト
 nnoremap <silent> ,s :<C-u>Unite file_rec:! -buffer-name=project<CR>
 
-if !(has('win32') || has('win64'))
-  nnoremap <silent> ,a :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
-endif
+" Everythingを起動している必要あり、加えて別途es.exeをDLしてパスを通す
+nnoremap <silent> ,a  :<C-u>Unite everything/async -buffer-name=everything<CR>
+" if has('win32') || has('win64')
+" else
+  " .gitとか.svn以下で検索
+"  nnoremap <silent> ,a :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
+" endif
 
 " <C-l>でウィンドウ分割して開く, <C-o>でタブで開く
 augroup myvimrc
@@ -485,7 +493,7 @@ let g:switch_custom_definitions =
 \        '"\(.\{-}\)"'  : '''\1''',
 \   },
 \]
-
+''
 " 呼び出し用のキーマッピング
 nnoremap - :<C-u>Switch<CR>
 
