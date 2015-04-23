@@ -49,42 +49,42 @@ NeoBundle 'Shougo/vimproc.vim', {
 
 NeoBundle 'w0ng/vim-hybrid'            " カラースキーム
 NeoBundle 'itchyny/lightline.vim'      " 綺麗なステータスライン
-NeoBundle 'Shougo/unite.vim'           " 検索インタフェース
+NeoBundle 'Shougo/vimshell.vim'        " vimshell
 NeoBundle 'Shougo/neomru.vim'          " 履歴
 NeoBundle 'Shougo/neocomplete.vim'     " 補完
 NeoBundle 'Shougo/neosnippet.vim'      " スニペット補完
 NeoBundle 'Shougo/neosnippet-snippets' " スニペット集
 NeoBundle 'Shougo/unite-outline'       " コード中のクラスの概要
-NeoBundle 'Shougo/vimshell.vim'        " vimshell
+NeoBundle 'Shougo/unite.vim'           " 検索インタフェース
+NeoBundle 'sgur/unite-everything'      " デスクトップ検索
+NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
+NeoBundle 'basyura/unite-rails'        " unite for rails
+NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
+NeoBundle 'ujihisa/unite-colorscheme'  " Uniteでカラースキームを選ぶ
 NeoBundle 'thinca/vim-ref'             " クイックリファレンス閲覧
 NeoBundle 'thinca/vim-quickrun'        " バッファのコードを実行
 NeoBundle 'osyo-manga/shabadou.vim'    " QuickRunの拡張
 NeoBundle 'osyo-manga/vim-watchdogs'   " 静的コード解析(非同期)
-NeoBundle 'sgur/unite-everything'      " デスクトップ検索
 NeoBundle 'dannyob/quickfixstatus'     " quickfixをコマンドウィンドウに表示
 NeoBundle 'KazuakiM/vim-qfsigns'       " quickfixをsign領域に表示
 NeoBundle 'koron/codic-vim'            " 英和辞書(補完にも使う)
-NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
 NeoBundle 'tpope/vim-surround'         " テキストオブジェクト
 NeoBundle 'tpope/vim-fugitive'         " Git
 NeoBundle 'tpope/vim-rails'            " rails
-NeoBundle 'basyura/unite-rails'        " unite for rails
 NeoBundle 'kannokanno/previm'          " プレビュー
-NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
 NeoBundle 'groenewege/vim-less'        " LESS
 NeoBundle 'kchmck/vim-coffee-script'   " CoffeeScript
 NeoBundle 'AndrewRadev/switch.vim'     " toggling text
-NeoBundle 'ujihisa/unite-colorscheme'  " Uniteでカラースキームを選ぶ
 NeoBundle 'kana/vim-submode'           " submode
 NeoBundle 'zhaocai/quickrun-runner-vimshell.vim' " QuickRunでvimshellを使う
 
 " C# ... 主にUnityに使うっぽい
-if has('MSBuild')
+if executable('MSBuild') || executable('xbuild')
   NeoBundleLazy 'nosami/Omnisharp', {
   \   'autoload': {'filetypes': ['cs']},
   \   'build': {
   \     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
-  \     'mac': 'xbuild server/OmniSharp.sln',
+  \     'mac':  'xbuild server/OmniSharp.sln',
   \     'unix': 'xbuild server/OmniSharp.sln',
   \   }
   \ }
@@ -120,7 +120,7 @@ set list                " 不可視文字描画
 set listchars=tab:^\_,trail:~,extends:.
 set wildmenu
 set wildmode=list,longest:full
-set t_ut=              " for tmux
+set t_ut=
 set cursorline
 hi clear CursorLine
 
@@ -170,10 +170,6 @@ inoremap jj <ESC>
 " <ESC>連打でハイライトを消す
 nnoremap <ESC><ESC> :nohlsearch<CR>
 " ウィンドウ幅の調整
-" nnoremap <C-l> <C-w>>
-" nnoremap <C-h> <C-w><
-" nnoremap <C-j> <C-w>+
-" nnoremap <C-k> <C-w>-
 call submode#enter_with('resize_x', 'n', '', 'sdl', '<C-w>>')
 call submode#enter_with('resize_x', 'n', '', 'sdh', '<C-w><')
 call submode#enter_with('resize_y', 'n', '', 'sdj', '<C-w>+')
@@ -183,10 +179,6 @@ call submode#map('resize_x', 'n', '', 'h', '<C-w><')
 call submode#map('resize_y', 'n', '', 'j', '<C-w>+')
 call submode#map('resize_y', 'n', '', 'k', '<C-w>-')
 " いっぱい移動する
-" nnoremap J 5j
-" nnoremap K 5k
-" vnoremap J 5j
-" vnoremap K 5k
 nnoremap J <NOP>
 nnoremap K <NOP>
 vnoremap J <NOP>
@@ -200,8 +192,6 @@ call submode#enter_with('move', 'v', '', 'sk', '5k')
 call submode#map('move', 'v', '', 'j', '5j')
 call submode#map('move', 'v', '', 'k', '5k')
 " タブの移動
-" nnoremap } gt
-" nnoremap { gT
 call submode#enter_with('tabmode', 'n', '', 'sl', 'gt')
 call submode#enter_with('tabmode', 'n', '', 'sh', 'gT')
 call submode#map('tabmode', 'n', '', 'l', 'gt')
@@ -314,8 +304,8 @@ let g:quickrun_config = {
 \  '_' : {
 \    'runner': 'vimproc',
 \    'runner/vimproc/updatetime': 40,
-\    'hook/santi_pinch/enable': 1,
 \    'hook/time/enable': 1,
+\    'hook/santi_pinch/enable': 1,
 \    'hook/output_encode/encoding': 'utf-8',
 \    'hook/quickfix_replate_tempname_to_bufnr/enable_exit': 1,
 \    'hook/quickfix_replate_tempname_to_bufnr/priority_exit': -10,
@@ -326,26 +316,14 @@ let g:quickrun_config = {
 \    'outputter': 'multi:buffer:quickfix',
 \    'outputter/quickfix/open_cmd' : '',
 \  },
-\  'cpp/vc': {
-\    'exec': ['cl.bat %o %S /Fo%S:P:R.obj /Fe%S:P:R.exe',
-\             '%S:P:R.exe %a'],
-\    'tempfile': '%{tempname()}.cpp',
-\    'hook/sweep/files': ['%S:P:R.exe', '%S:P:R.obj'],
-\    'hook/output_encode/encoding': 'cp932'
-\  },
-\  'cs': { 'hook/output_encode/encoding': 'cp932' },
-\  'watchdogs_checker/vc' : {
-\    'command'   : 'cl.bat',
-\    'exec'      : '%c /Zs %o %s:p ',
-\    'hook/output_encode/encoding': 'cp932'
-\	},
+\
 \  'ruby/watchdogs_checker' : { 'type' : 'watchdogs_checker/rubocop' },
-\  'cpp/watchdogs_checker'  : { 'type' : 'watchdogs_checker/vc' },
 \}
 
-" VC++をデフォルトにしておく
-if has('win32') || has('win64')
-  let g:quickrun_config.cpp = { 'type': 'cpp/vc' }
+if !exists("g:quickrun_config['watchdogs_checker/_']")
+  let g:quickrun_config['watchdogs_checker/_'] = {
+  \ 'hook/time/enable': 0,
+  \ }
 endif
 
 " <C-c>でQuickRunの強制終了
@@ -394,15 +372,9 @@ nnoremap <silent> ,,g :<C-u>Unite grep:! -buffer-name=search<CR>
 " outline結果, :Unite outline
 nnoremap <silent> ,d :<C-u>Unite outline -buffer-name=outline<CR>
 " プロジェクト
-nnoremap <silent> ,s :<C-u>Unite file_rec:! -buffer-name=project<CR>
-
+nnoremap <silent> ,s :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
 " Everythingを起動している必要あり、加えて別途es.exeをDLしてパスを通す
 nnoremap <silent> ,a  :<C-u>Unite everything/async -buffer-name=everything<CR>
-" if has('win32') || has('win64')
-" else
-  " .gitとか.svn以下で検索
-"  nnoremap <silent> ,a :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
-" endif
 
 " <C-l>でウィンドウ分割して開く, <C-o>でタブで開く
 augroup myvimrc
@@ -474,11 +446,7 @@ augroup myvimrc
   autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
 augroup END
 
-" Previm
 let g:previm_open_cmd = ''
-nnoremap [previm] <Nop>
-nnoremap <silent> <F7> :<C-u>PrevimOpen<CR>
-nnoremap <silent> <F5> :call previm#refresh()<CR>
 
 
 " =============================================================================
@@ -486,14 +454,13 @@ nnoremap <silent> <F5> :call previm#refresh()<CR>
 " =============================================================================
 " 文字列リテラルをトグル
 " 'string' → "string" → 'string' ...
-let g:switch_custom_definitions =
-\[
+let g:switch_custom_definitions = [
 \   {
 \       '''\(.\{-}\)''' :  '"\1"',
 \        '"\(.\{-}\)"'  : '''\1''',
 \   },
 \]
-''
+
 " 呼び出し用のキーマッピング
 nnoremap - :<C-u>Switch<CR>
 
