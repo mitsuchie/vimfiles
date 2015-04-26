@@ -39,13 +39,15 @@ endif
 call neobundle#begin(expand(s:home."/bundle/"))
 NeoBundleFetch 'Shougo/neobundle.vim'
 
-NeoBundle 'Shougo/vimproc.vim', {
-\ 'build' : {
+if executable('make')
+  NeoBundle 'Shougo/vimproc.vim', {
+\   'build' : {
 \     'windows' : 'tools\\update-dll-mingw',
 \     'mac'     : 'make -f make_mac.mak',
 \     'linux'   : 'make',
-\    },
+\   },
 \ }
+endif
 
 NeoBundle 'w0ng/vim-hybrid'            " カラースキーム
 NeoBundle 'itchyny/lightline.vim'      " 綺麗なステータスライン
