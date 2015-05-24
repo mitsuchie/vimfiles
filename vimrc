@@ -56,8 +56,8 @@ NeoBundle 'Shougo/neomru.vim'          " 履歴
 NeoBundle 'Shougo/neocomplete.vim'     " 補完
 NeoBundle 'Shougo/neosnippet.vim'      " スニペット補完
 NeoBundle 'Shougo/neosnippet-snippets' " スニペット集
-NeoBundle 'Shougo/unite-outline'       " コード中のクラスの概要
 NeoBundle 'Shougo/unite.vim'           " 検索インタフェース
+NeoBundle 'Shougo/unite-outline'       " コード中のクラスの概要
 NeoBundle 'sgur/unite-everything'      " デスクトップ検索
 NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
 NeoBundle 'basyura/unite-rails'        " unite for rails
@@ -366,17 +366,20 @@ nnoremap <silent> ,f :<C-u>Unite buffer file_mru file -buffer-name=searcher<CR>
 nnoremap <silent> ,,f :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
 " ファイル
 nnoremap <silent> ,e :<C-u>Unite buffer -buffer-name=filer<CR>
+" outline結果, :Unite outline
+nnoremap <silent> o :<C-u>Unite outline -buffer-name=outline<CR>
 " ヤンク(コピー履歴)
 nnoremap <silent> ,y :<C-u>Unite history/yank -buffer-name=history_yank<CR>
 " grep結果, :Unite grep:(パス)
 nnoremap <silent> ,g :<C-u>Unite grep:. -buffer-name=search<CR>
 nnoremap <silent> ,,g :<C-u>Unite grep:! -buffer-name=search<CR>
-" outline結果, :Unite outline
-nnoremap <silent> ,d :<C-u>Unite outline -buffer-name=outline<CR>
 " プロジェクト
-nnoremap <silent> ,s :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
 " Everythingを起動している必要あり、加えて別途es.exeをDLしてパスを通す
-nnoremap <silent> ,a  :<C-u>Unite everything/async -buffer-name=everything<CR>
+if executable('es')
+  nnoremap <silent> ,a  :<C-u>Unite everything/async -buffer-name=everything<CR>
+else
+  nnoremap <silent> ,a  :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
+endif
 
 " <C-l>でウィンドウ分割して開く, <C-o>でタブで開く
 augroup myvimrc
