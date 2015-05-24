@@ -301,6 +301,25 @@ call quickrun#module#register(shabadou#make_quickrun_hook_anim(
 \	6,
 \), 1)
 
+function! s:hook_quickrun_to_unix_line()
+	let s:hook = { 'name': 'to_unix_line', 'kind': 'hook' }
+
+	function! s:hook.init(session)
+		let config = a:session.config
+		let runner = config.runner
+		let enable = get(config, 'hook/to_unix_line/enable', 0)
+		let self.config.enable = enable
+	endfunction
+
+	function! s:hook.on_output(session, context)
+		let a:context.data = substitute(a:context.data, "\r", '', 'g')
+	endfunction
+
+	call quickrun#module#register(s:hook)
+endfunction
+
+call s:hook_quickrun_to_unix_line()
+
 " エラーならquickfix, 成功ならバッファに表示
 let g:quickrun_config = {
 \  '_' : {
@@ -321,6 +340,10 @@ let g:quickrun_config = {
 \
 \  'ruby/watchdogs_checker' : { 'type' : 'watchdogs_checker/rubocop' },
 \}
+
+if has('win32') || has('win64')
+  let g:quickrun_config['_']['hook/to_unix_line/enable'] = 1
+endif
 
 if !exists("g:quickrun_config['watchdogs_checker/_']")
   let g:quickrun_config['watchdogs_checker/_'] = {
