@@ -63,6 +63,7 @@ NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
 NeoBundle 'basyura/unite-rails'        " unite for rails
 NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
 NeoBundle 'ujihisa/unite-colorscheme'  " Uniteでカラースキームを選ぶ
+NeoBundle 'thinca/vim-fontzoom'        " フォントサイズ変更
 NeoBundle 'thinca/vim-ref'             " クイックリファレンス閲覧
 NeoBundle 'thinca/vim-quickrun'        " バッファのコードを実行
 NeoBundle 'osyo-manga/shabadou.vim'    " QuickRunの拡張
@@ -106,7 +107,6 @@ set smartindent         " スマートインデント
 set nobackup            " バックアップなし
 set noswapfile          " スワップなし
 set undofile            " undoファイルあり
-" set autochdir           " 開いたファイルのディレクトリに移動
 set tags=tags;          " タグの設定
 set laststatus=2        " ステータス行を2行にする
 set cmdheight=2         " コマンド行は1行に
@@ -115,7 +115,6 @@ set clipboard=unnamed   " クリップボード共有
 set showmatch           " 対応する括弧の表示
 set hlsearch            " 検索結果のハイライト
 set history=100         " ヒストリの最大
-set shellslash          " Windowsで/
 set backspace=indent,start,eol  " インデントを消せるようにする
 set formatoptions-=ro   " 改行時にコメント継続させない
 set list                " 不可視文字描画
@@ -166,11 +165,6 @@ nnoremap <silent> sH <C-w>H<CR>
 nnoremap <silent> sJ <C-w>J<CR>
 nnoremap <silent> sK <C-w>K<CR>
 nnoremap <silent> sL <C-w>L<CR>
-
-" エスケープ
-inoremap jj <ESC>
-" <ESC>連打でハイライトを消す
-nnoremap <ESC><ESC> :nohlsearch<CR>
 " ウィンドウ幅の調整
 call submode#enter_with('resize_x', 'n', '', 'sdl', '<C-w>>')
 call submode#enter_with('resize_x', 'n', '', 'sdh', '<C-w><')
@@ -181,10 +175,6 @@ call submode#map('resize_x', 'n', '', 'h', '<C-w><')
 call submode#map('resize_y', 'n', '', 'j', '<C-w>+')
 call submode#map('resize_y', 'n', '', 'k', '<C-w>-')
 " いっぱい移動する
-nnoremap J <NOP>
-nnoremap K <NOP>
-vnoremap J <NOP>
-vnoremap K <NOP>
 call submode#enter_with('move', 'n', '', 'sj', '5j')
 call submode#enter_with('move', 'n', '', 'sk', '5k')
 call submode#map('move', 'n', '', 'j', '5j')
@@ -198,12 +188,17 @@ call submode#enter_with('tabmode', 'n', '', 'sl', 'gt')
 call submode#enter_with('tabmode', 'n', '', 'sh', 'gT')
 call submode#map('tabmode', 'n', '', 'l', 'gt')
 call submode#map('tabmode', 'n', '', 'h', 'gT')
+" エスケープ
+inoremap jj <ESC>
+" <ESC>連打でハイライトを消す
+nnoremap <ESC><ESC> :nohlsearch<CR>
 " タグ関係
 nnoremap t <C-t>
 nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
 nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
-" スペースの活用
-" nnoremap <Space> .
+" フォントサイズ
+nnoremap <silent> H :Fontzoom +1<CR>
+nnoremap <silent> L :Fontzoom -1<CR>
 
 " 互換性の問題
 if !has('gui_running')
@@ -301,6 +296,7 @@ call quickrun#module#register(shabadou#make_quickrun_hook_anim(
 \	6,
 \), 1)
 
+" Windows用の改行コード削除
 function! s:hook_quickrun_to_unix_line()
 	let s:hook = { 'name': 'to_unix_line', 'kind': 'hook' }
 
@@ -320,11 +316,15 @@ endfunction
 
 call s:hook_quickrun_to_unix_line()
 
-" エラーならquickfix, 成功ならバッファに表示
+" VisualStudioの設定
+let s:clcommand = '"D:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/vcvars32.bat" x86 \& cl '
+
 let g:quickrun_config = {
 \  '_' : {
 \    'runner': 'vimproc',
 \    'runner/vimproc/updatetime': 40,
+\    'outputter': 'multi:buffer:quickfix',
+\    'outputter/quickfix/open_cmd' : '',
 \    'hook/time/enable': 1,
 \    'hook/santi_pinch/enable': 1,
 \    'hook/output_encode/encoding': 'utf-8',
@@ -334,21 +334,23 @@ let g:quickrun_config = {
 \    'hook/close_quickfix/enable_hook_loaded': 1,
 \    'hook/qfsigns_update/enable_exit':   1,
 \    'hook/qfsigns_update/priority_exit': 3,
-\    'outputter': 'multi:buffer:quickfix',
-\    'outputter/quickfix/open_cmd' : '',
+\    'hook/to_unix_line/enable': 1,
+\  },
+\  'cpp/cl': {
+\   'exec': [s:clcommand.' %o %s /nologo /EHsc /Fo%s:p:r.obj /Fe%s:p:r.exe \& %s:p:r.exe %a'],
+\   'tempfile': '%{tempname()}.cpp',
+\   'hook/sweep/files': ['%S:p:r.exe', '%S:p:r.obj'],
+\   'hook/output_encode/encoding': 'cp932'
+\  },
+\  'watchdogs_checker/_': {
+\    'hook/time/enable': 0
 \  },
 \
-\  'ruby/watchdogs_checker' : { 'type' : 'watchdogs_checker/rubocop' },
+\  'ruby/watchdogs_checker': { 'type': 'watchdogs_checker/rubocop' },
 \}
 
 if has('win32') || has('win64')
-  let g:quickrun_config['_']['hook/to_unix_line/enable'] = 1
-endif
-
-if !exists("g:quickrun_config['watchdogs_checker/_']")
-  let g:quickrun_config['watchdogs_checker/_'] = {
-  \ 'hook/time/enable': 0,
-  \ }
+  let g:quickrun_config.cpp = { 'type': 'cpp/cl' }
 endif
 
 " <C-c>でQuickRunの強制終了
