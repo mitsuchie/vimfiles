@@ -6,15 +6,6 @@ set fileformat=unix
 set fileformats=unix,dos,mac
 
 " =============================================================================
-" terminal encoding
-" =============================================================================
-if has('win32') || has('win64')
-  set termencoding=cp932
-else
-  set termencoding=utf-8
-endif
-
-" =============================================================================
 " autocmdを初期化
 " =============================================================================
 augroup myvimrc
@@ -22,12 +13,14 @@ augroup myvimrc
 augroup END
 
 " =============================================================================
+" terminal encoding
+" =============================================================================
+let &termencoding = has('win32') || has('win64') ? 'cp932' : 'utf-8'
+
+" =============================================================================
 " vimfilesの設定
 " =============================================================================
-let s:home = expand('~/.vim')
-if has('win32') || has('win64')
-  let s:home = expand('~/vimfiles')
-endif
+let s:home = expand(has('win32') || has('win64') ? '~/vimfiles' : '~/.vim')
 
 " =============================================================================
 " NeoBundle
@@ -134,10 +127,6 @@ if &t_Co <= 16
   colorscheme desert
 else
   colorscheme hybrid
-endif
-
-if has('win32') || has('win64')
-  set termencoding=cp932
 endif
 
 " Post Launch Settings
@@ -514,6 +503,26 @@ if &term =~ "xterm"
   cnoremap <special> <Esc>[200~ <nop>
   cnoremap <special> <Esc>[201~ <nop>
 endif
+
+
+" =============================================================================
+" matchit
+" =============================================================================
+if !exists('loaded_matchit')
+	runtime macros/matchit.vim
+endif
+
+
+" =============================================================================
+" Programming Contest
+" =============================================================================
+let g:procon_contests_path = expand('~/contests')
+
+
+function! AtCoderRegularContest(number)
+	let $arc_path = expand(g:procon_contests_path.'/arc')
+	cd $arc_path
+endfunction
 
 
 " =============================================================================
