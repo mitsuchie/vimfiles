@@ -527,6 +527,10 @@ function s:statusline_base(repo, name)
 	endfunction
 
 	function! statusline.extract(path)
+		if a:path == '' || matchstr(a:path, '\.'.self.repo) != ''
+			return ''
+		endif
+
 		let current  = simplify(fnamemodify(a:path,':p:s'))
 		let previous = ''
 		while current!=previous
