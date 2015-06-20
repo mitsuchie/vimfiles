@@ -553,11 +553,11 @@ function s:statusline_base(repo, name)
 
 	function! statusline.auto_detect()
 		execute '
-		\	augroup '.substitute(self.name, ':', '_', '').'
+		\	augroup '.substitute(self.name, ':', '_', '').'_detect
 		\		autocmd!
 		\		autocmd BufNewFile,BufReadPost * unlet! '.self.name.'
-		\		autocmd VimEnter *    unlet! '.self.name.'
-		\		autocmd CmdWinEnter * unlet! '.self.name.'
+		\		autocmd VimEnter *               unlet! '.self.name.'
+		\		autocmd CmdWinEnter *            unlet! '.self.name.'
 		\	augroup END
 		\ '
 	endfunction
