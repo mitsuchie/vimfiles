@@ -56,22 +56,23 @@ NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
 NeoBundle 'basyura/unite-rails'        " unite for rails
 NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
 NeoBundle 'ujihisa/unite-colorscheme'  " Uniteでカラースキームを選ぶ
+NeoBundle "osyo-manga/unite-highlight" " ハイライト確認
+NeoBundle 'osyo-manga/shabadou.vim'    " QuickRunの拡張
+NeoBundle 'osyo-manga/vim-watchdogs'   " 静的コード解析(非同期)
 NeoBundle 'thinca/vim-fontzoom'        " フォントサイズ変更
 NeoBundle 'thinca/vim-ref'             " クイックリファレンス閲覧
 NeoBundle 'thinca/vim-quickrun'        " バッファのコードを実行
-NeoBundle 'osyo-manga/shabadou.vim'    " QuickRunの拡張
-NeoBundle 'osyo-manga/vim-watchdogs'   " 静的コード解析(非同期)
 NeoBundle 'dannyob/quickfixstatus'     " quickfixをコマンドウィンドウに表示
 NeoBundle 'KazuakiM/vim-qfsigns'       " quickfixをsign領域に表示
 NeoBundle 'koron/codic-vim'            " 英和辞書(補完にも使う)
 NeoBundle 'tpope/vim-surround'         " テキストオブジェクト
 NeoBundle 'tpope/vim-fugitive'         " Git
 NeoBundle 'tpope/vim-rails'            " rails
-NeoBundle 'kannokanno/previm'          " プレビュー
+NeoBundle 'kannokanno/previm'          " Markdown
 NeoBundle 'groenewege/vim-less'        " LESS
 NeoBundle 'kchmck/vim-coffee-script'   " CoffeeScript
-NeoBundle 'AndrewRadev/switch.vim'     " toggling text
-NeoBundle 'kana/vim-submode'           " submode
+NeoBundle 'AndrewRadev/switch.vim'     " トグル操作(true <=> false など)
+NeoBundle 'kana/vim-submode'           " サブモード(連続操作)
 NeoBundle 'zhaocai/quickrun-runner-vimshell.vim' " QuickRunでvimshellを使う
 
 " C# ... 主にUnityに使うっぽい
@@ -148,8 +149,8 @@ let g:submode_keyseqs_to_leave = ['s', 'q']
 " サブモード
 nnoremap s <nop>
 nnoremap <silent> si :lcd %:h<CR>
-nnoremap <silent> ss :split<CR>
-nnoremap <silent> sv :vsplit<CR>
+nnoremap <silent> sv :<C-u>VimShell -split<CR>
+nnoremap <silent> sn :<C-u>Unite launcher<CR>gvim.exe
 nnoremap <silent> sH <C-w>H<CR>
 nnoremap <silent> sJ <C-w>J<CR>
 nnoremap <silent> sK <C-w>K<CR>
@@ -164,30 +165,26 @@ call submode#map('resize_x', 'n', '', 'h', '<C-w><')
 call submode#map('resize_y', 'n', '', 'j', '<C-w>+')
 call submode#map('resize_y', 'n', '', 'k', '<C-w>-')
 " いっぱい移動する
-call submode#enter_with('move', 'n', '', 'sj', '5j')
-call submode#enter_with('move', 'n', '', 'sk', '5k')
-call submode#map('move', 'n', '', 'j', '5j')
-call submode#map('move', 'n', '', 'k', '5k')
-call submode#enter_with('move', 'v', '', 'sj', '5j')
-call submode#enter_with('move', 'v', '', 'sk', '5k')
-call submode#map('move', 'v', '', 'j', '5j')
-call submode#map('move', 'v', '', 'k', '5k')
+call submode#enter_with('move', 'nv', '', 'sj', '5j')
+call submode#enter_with('move', 'nv', '', 'sk', '5k')
+call submode#map('move', 'nv', '', 'j', '5j')
+call submode#map('move', 'nv', '', 'k', '5k')
 " タブの移動
 call submode#enter_with('tabmode', 'n', '', 'sl', 'gt')
 call submode#enter_with('tabmode', 'n', '', 'sh', 'gT')
 call submode#map('tabmode', 'n', '', 'l', 'gt')
 call submode#map('tabmode', 'n', '', 'h', 'gT')
+" フォントサイズ
+call submode#enter_with('fontzoom', 'n', '', 's+', ':FontZoom +1<CR>')
+call submode#enter_with('fontzoom', 'n', '', 's-', ':FontZoom +1<CR>')
+call submode#map('fontzoom', 'n', '', '+', ':FontZoom +1<CR>')
+call submode#map('fontzoom', 'n', '', '-', ':FontZoom -1<CR>')
 " エスケープ
 inoremap jj <ESC>
 " <ESC>連打でハイライトを消す
 nnoremap <ESC><ESC> :nohlsearch<CR>
 " タグ関係
 nnoremap t <C-t>
-nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
-nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
-" フォントサイズ
-nnoremap <silent> H :Fontzoom +1<CR>
-nnoremap <silent> L :Fontzoom -1<CR>
 
 " 互換性の問題
 if !has('gui_running')
@@ -233,26 +230,20 @@ endfunction
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 augroup myvimrc
-  autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-  autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-  autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-  autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-  autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-  autocmd FileType ruby set omnifunc=rubycomplete#Complete
+  autocmd FileType css        setl omnifunc=csscomplete#CompleteCSS
+  autocmd FileType html       setl omnifunc=htmlcomplete#CompleteTags
+  autocmd FileType markdown   setl omnifunc=htmlcomplete#CompleteTags
+  autocmd FileType javascript setl omnifunc=javascriptcomplete#CompleteJS
+  autocmd FileType python     setl omnifunc=pythoncomplete#Complete
+  autocmd FileType xml        setl omnifunc=xmlcomplete#CompleteTags
+  autocmd FileType ruby       setl omnifunc=rubycomplete#Complete
 augroup END
-
-" ドットやアローで補完リストを表示する
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
-endif
-let g:neocomplete#force_omni_input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
-" let g:neocomplete#force_omni_input_patterns.cpp  = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
 if !exists('g:neocomplete#sources#omni#input_patterns')
   let g:neocomplete#sources#omni#input_patterns = {}
 endif
+let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
 " let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-" let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
 
 " <C-Space>でオムニ補完 VisualStudioに合わせる
 imap <Nul> <C-x><C-o>
@@ -315,6 +306,7 @@ let g:quickrun_config = {
 \    'outputter': 'multi:buffer:quickfix',
 \    'outputter/quickfix/open_cmd' : '',
 \    'hook/time/enable': 1,
+\    'hook/to_unix_line/enable': 1,
 \    'hook/santi_pinch/enable': 1,
 \    'hook/output_encode/encoding': 'utf-8',
 \    'hook/quickfix_replate_tempname_to_bufnr/enable_exit': 1,
@@ -323,7 +315,6 @@ let g:quickrun_config = {
 \    'hook/close_quickfix/enable_hook_loaded': 1,
 \    'hook/qfsigns_update/enable_exit':   1,
 \    'hook/qfsigns_update/priority_exit': 3,
-\    'hook/to_unix_line/enable': 1,
 \  },
 \  'cpp/cl': {
 \   'exec': [s:clcommand.' %o %s /nologo /EHsc /Fo%s:p:r.obj /Fe%s:p:r.exe \& %s:p:r.exe %a'],
@@ -331,10 +322,7 @@ let g:quickrun_config = {
 \   'hook/sweep/files': ['%S:p:r.exe', '%S:p:r.obj'],
 \   'hook/output_encode/encoding': 'cp932'
 \  },
-\  'watchdogs_checker/_': {
-\    'hook/time/enable': 0
-\  },
-\
+\  'watchdogs_checker/_': { 'hook/time/enable': 0 },
 \  'ruby/watchdogs_checker': { 'type': 'watchdogs_checker/rubocop' },
 \}
 
@@ -360,11 +348,12 @@ execute 'sign define '.get(g:qfsigns#Config,'name').' texthl=Error text=>>'
 " =============================================================================
 " ref
 " =============================================================================
+" リファレンスの文字コード
+let g:ref_refe_encoding = "UTF-8"
+
 " + でカーソル下の単語のリファレンスを開く
 nmap <silent> + <Plug>(ref-keyword)
 vmap <silent> + <Plug>(ref-keyword)
-
-let g:ref_refe_encoding = "UTF-8"
 
 
 " =============================================================================
@@ -373,27 +362,32 @@ let g:ref_refe_encoding = "UTF-8"
 let g:unite_enable_start_insert = 1         " 最初からinsertモードにしておく
 let g:unite_source_history_yank_enable = 1  " ヤンク履歴とか使えるようにする
 let g:unite_source_history_yank_limit = 100 " 履歴の最大を設定
+let g:unite_force_overwrite_statusline = 0  " ステータスはlightlineに任せる
 
 " , にショートカットを割り振っておく
 " 最近開いたファイルとかその他諸々
-nnoremap <silent> ,f :<C-u>Unite buffer file_mru file -buffer-name=searcher<CR>
+nnoremap <silent> ,f  :<C-u>Unite buffer file_mru file -buffer-name=searcher<CR>
 nnoremap <silent> ,,f :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
-" ファイル
-nnoremap <silent> ,e :<C-u>Unite buffer -buffer-name=filer<CR>
-" outline結果, :Unite outline
-nnoremap <silent> o :<C-u>Unite outline -buffer-name=outline<CR>
 " ヤンク(コピー履歴)
 nnoremap <silent> ,y :<C-u>Unite history/yank -buffer-name=history_yank<CR>
+" ランチャー
+nnoremap <silent> ,r :<C-u>Unite launcher -buffer-name=outline<CR>
+" outline結果, :Unite outline
+nnoremap <silent> o :<C-u>Unite outline -buffer-name=outline<CR>
 " grep結果, :Unite grep:(パス)
-nnoremap <silent> ,g :<C-u>Unite grep:. -buffer-name=search<CR>
+nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search<CR>
 nnoremap <silent> ,,g :<C-u>Unite grep:! -buffer-name=search<CR>
-" プロジェクト
-" Everythingを起動している必要あり、加えて別途es.exeをDLしてパスを通す
+" タグ関連
+nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
+nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
+" プロジェクト (everything)
 if executable('es')
   nnoremap <silent> ,a  :<C-u>Unite everything/async -buffer-name=everything<CR>
 else
   nnoremap <silent> ,a  :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
 endif
+" Contests
+nnoremap <silent> ,c :<C-u>Unite atcoder -buffer-name=atcoder<CR>
 
 " <C-l>でウィンドウ分割して開く, <C-o>でタブで開く
 augroup myvimrc
@@ -407,7 +401,7 @@ augroup myvimrc
   autocmd FileType unite inoremap <silent> <buffer> <C-c> <ESC>:q<CR>
 augroup END
 
-" grepはthe platium searcherを使う (必須) pt.exe
+" grep は the platium searcher を使う (必須) pt.exe
 if executable('pt')
   set grepprg=pt\ --nogroup
   let g:unite_source_grep_command = 'pt'
@@ -471,17 +465,21 @@ let g:previm_open_cmd = ''
 " =============================================================================
 " switch
 " =============================================================================
-" 文字列リテラルをトグル
-" 'string' → "string" → 'string' ...
-let g:switch_custom_definitions = [
+" 呼び出し用のキーマッピング
+nnoremap - :<C-u>Switch<CR>
+
+" 文字列リテラルをトグル 'string' → "string" → 'string' ...
+let s:switch_custom_definitions = [
 \   {
 \       '''\(.\{-}\)''' :  '"\1"',
 \        '"\(.\{-}\)"'  : '''\1''',
 \   },
 \]
 
-" 呼び出し用のキーマッピング
-nnoremap - :<C-u>Switch<CR>
+augroup myvimrc
+	autocmd FileType *     let g:switch_custom_definitions = []
+	autocmd FileType ruby  let g:switch_custom_definitions = s:switch_custom_definitions
+augroup END
 
 
 " =============================================================================
@@ -506,23 +504,132 @@ endif
 
 
 " =============================================================================
+" statusline
+" =============================================================================
+function s:statusline_base(repo, name)
+	let statusline = { 'name': 'b:'.a:repo.'_'.a:name.'_statusline_cache', 'repo': a:repo }
+	function! statusline.get_string()
+		let name  = self.name
+		if exists(name)
+			return eval(name)
+		endif
+		
+		execute "let ".name." = ''"
+
+		let path = expand('%:p')
+		let root = self.extract(path)
+
+		if root != ''
+			execute "let ".name." = '".self.statusline(root, path)."'"
+		endif
+
+		return eval(name)
+	endfunction
+
+	function! statusline.extract(path)
+		let current  = simplify(fnamemodify(a:path,':p:s'))
+		let previous = ''
+		while current!=previous
+			if self.is_root(current)
+				break
+			endif
+			let previous = current
+			let current  = fnamemodify(current, ':h')
+		endwhile
+		return self.is_root(current) ? current : ''
+	endfunction
+
+	function! statusline.is_root(path)
+		return a:path != '' && isdirectory(substitute(a:path, '[\/]$', '', '').'/.'.self.repo)
+	endfunction
+
+	function! statusline.statusline()
+		return self.name
+	endfunction
+
+	function! statusline.detect()
+		execute 'unlet! ' . self.name
+	endfunction
+
+	function! statusline.auto_detect()
+		execute '
+		\	augroup '.substitute(self.name, ':', '_', '').'
+		\		autocmd!
+		\		autocmd BufNewFile,BufReadPost * unlet! '.self.name.'
+		\		autocmd VimEnter *    unlet! '.self.name.'
+		\		autocmd CmdWinEnter * unlet! '.self.name.'
+		\	augroup END
+		\ '
+	endfunction
+
+	return statusline
+endfunction
+
+" -----------------------------------------------------------------------------
+let g:gitstatusline = s:statusline_base('git', 'main')
+call g:gitstatusline.auto_detect()
+
+function! g:gitstatusline.statusline(root, path)
+	let is_managed = system('git -C '.a:root.' ls-file   '.a:path) != ''
+	let is_changed = system('git -C '.a:root.' status -s '.a:path) != ''
+	
+	let option  = !is_managed ? 'X'
+	\			: !is_changed ? '_'
+	\			: '*'
+	
+	return 'Git('.option.')'
+endfunction
+
+
+let g:gitcommitline = s:statusline_base('git', 'commit')
+call g:gitcommitline.auto_detect()
+
+function! g:gitcommitline.statusline(root, path)
+	let lines = split(system('git -C '.a:root.' log --format=oneline '.a:path), "\n")
+	let commits  = len(lines)
+	let revision = commits != 0 ? lines[0][0:3] : ''
+	return commits.'#'.revision
+endfunction
+
+let s:exwombat = g:lightline#colorscheme#wombat#palette
+let s:exwombat.normal.git = s:exwombat.normal.warning
+let g:lightline#colorscheme#exwombat#palette = s:exwombat
+
+let g:lightline = {
+\ 'colorscheme': 'exwombat',
+\ 'active': {
+\   'left': [ [ 'mode', 'paste' ],
+\             [ 'git_main', 'git_branch', 'git_revision',
+\               'unite', 'readonly', 'filename', 'modified' ] ]
+\ },
+\ 'component': {
+\   'git_branch':   '%{exists("*fugitive#head(")?fugitive#head():""}',
+\   'git_revision': '%{g:gitcommitline.get_string()}',
+\   'unite': '%{substitute(unite#get_status_string(), " | ", "", "g")}'
+\ },
+\ 'component_expand': {
+\   'git_main': 'g:gitstatusline.get_string',
+\ },
+\ 'component_type': {
+\   'git_main': 'git'
+\ },
+\ 'component_visible_condition': {
+\   'git_main':     '(g:gitstatusline.get_string()!="")',
+\   'git_branch':   '(exists("*fugitive#head") && ""!=fugitive#head())',
+\   'git_revision': '(g:gitcommitline.get_string()!="")',
+\   'unite': '(&filetype=="unite")'
+\ },
+\ 'separator':    { 'left': '',  'right': ''  },
+\ 'subseparator': { 'left': '>', 'right': '<' }
+\ }
+
+
+" =============================================================================
 " matchit
 " =============================================================================
 if !exists('loaded_matchit')
 	runtime macros/matchit.vim
 endif
-
-
-" =============================================================================
-" Programming Contest
-" =============================================================================
-let g:procon_contests_path = expand('~/contests')
-
-
-function! AtCoderRegularContest(number)
-	let $arc_path = expand(g:procon_contests_path.'/arc')
-	cd $arc_path
-endfunction
 
 
 " =============================================================================
