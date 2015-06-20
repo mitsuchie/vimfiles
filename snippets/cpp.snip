@@ -476,7 +476,7 @@ options	head
 		return res;
 	}
 
-snippet	BinarySearch
+snippet	binary_search
 abbr	"二分探索"
 options	head
 	int lhs = 0, rhs = MAXN-1;
@@ -490,6 +490,18 @@ options	head
 	}
 
 	int res = rhs;
+
+snippet     bitcount
+abbr        "count standing bits"
+options     head
+    int bitcount(int bits)
+    {
+        int res = 0;
+        while(bits){ ++res; bits>>=1; }
+
+        return res;
+    }
+
 
 #-------------------------------------------------------------------------------
 # cpp utils
