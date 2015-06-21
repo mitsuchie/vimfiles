@@ -560,6 +560,7 @@ function s:statusline_base(repo, name)
 		\	augroup '.substitute(self.name, ':', '_', '').'_detect
 		\		autocmd!
 		\		autocmd BufNewFile,BufReadPost * unlet! '.self.name.'
+		\		autocmd BufWritePost           * unlet! '.self.name.'
 		\		autocmd VimEnter *               unlet! '.self.name.'
 		\		autocmd CmdWinEnter *            unlet! '.self.name.'
 		\	augroup END
@@ -574,7 +575,7 @@ let g:gitstatusline = s:statusline_base('git', 'main')
 call g:gitstatusline.auto_detect()
 
 function! g:gitstatusline.statusline(root, path)
-	let is_managed = system('git -C '.a:root.' ls-file   '.a:path) != ''
+	let is_managed = system('git -C '.a:root.' ls-files  '.a:path) != ''
 	let is_changed = system('git -C '.a:root.' status -s '.a:path) != ''
 	
 	let option  = !is_managed ? 'X'
@@ -589,6 +590,10 @@ let g:gitcommitline = s:statusline_base('git', 'commit')
 call g:gitcommitline.auto_detect()
 
 function! g:gitcommitline.statusline(root, path)
+	if system('git -C '.a:root.' ls-files  '.a:path) == ''
+		return ''
+	endif
+
 	let lines = split(system('git -C '.a:root.' log --format=oneline '.a:path), "\n")
 	let commits  = len(lines)
 	let revision = commits != 0 ? lines[0][0:3] : ''
