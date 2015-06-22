@@ -506,65 +506,60 @@ endif
 " =============================================================================
 " statusline
 " =============================================================================
-function s:statusline_base(repo, name)
-	let statusline = { 'name': 'b:'.a:repo.'_'.a:name.'_statusline_cache', 'repo': a:repo }
+function s:statusline_base(vcs_name, component)
+	let statusline = { 'vcs_name': a:vcs_name, 'component': a:component }
+
+	function! statusline.key()
+		return 'b:'.(self.vcs_name).'_'.(self.component).'_statusline_cache'
+	endfunction
+
 	function! statusline.get_string()
-		let name  = self.name
-		if exists(name)
-			return eval(name)
-		endif
-		
-		execute "let ".name." = ''"
-
-		let path = expand('%:p')
-		let root = self.extract(path)
-
-		if root != ''
-			execute "let ".name." = '".self.statusline(root, path)."'"
-		endif
-
-		return eval(name)
+		return exists(self.key()) ? eval(self.key()) : self.detect()
 	endfunction
 
 	function! statusline.extract(path)
-		if a:path == '' || matchstr(a:path, '\.'.self.repo) != ''
+		if a:path == '' || matchstr(a:path, '\.'.self.vcs_name) != ''
 			return ''
 		endif
 
-		let current  = simplify(fnamemodify(a:path,':p:s'))
-		let previous = ''
-		while current!=previous
-			if self.is_root(current)
-				break
-			endif
-			let previous = current
-			let current  = fnamemodify(current, ':h')
+		let path = simplify(fnamemodify(a:path,':p:s'))
+		let prev = ''
+
+		while path!=prev && !self.is_root(path)
+			let prev = path
+			let path = fnamemodify(path, ':h')
 		endwhile
-		return self.is_root(current) ? current : ''
+		return self.is_root(path) ? path : ''
 	endfunction
 
 	function! statusline.is_root(path)
-		return a:path != '' && isdirectory(substitute(a:path, '[\/]$', '', '').'/.'.self.repo)
+		return a:path != ''
+		\  && isdirectory(substitute(a:path,'[\/]$','','').'/.'.(self.vcs_name))
 	endfunction
 
-	function! statusline.statusline()
-		return self.name
+	function! statusline.on_hook(root, path)
+		return (self.vcs_name).'_'.(self.component)
 	endfunction
 
 	function! statusline.detect()
-		execute 'unlet! ' . self.name
+		let path = expand('%:p')
+		let root = self.extract(path)
+		execute "let ".(self.key())." = '".(root!='' ? self.on_hook(root, path) : '')."'"
+
+		return eval(self.key())
 	endfunction
 
 	function! statusline.auto_detect()
-		execute '
-		\	augroup '.substitute(self.name, ':', '_', '').'_detect
-		\		autocmd!
-		\		autocmd BufNewFile,BufReadPost * unlet! '.self.name.'
-		\		autocmd BufWritePost           * unlet! '.self.name.'
-		\		autocmd VimEnter *               unlet! '.self.name.'
-		\		autocmd CmdWinEnter *            unlet! '.self.name.'
-		\	augroup END
-		\ '
+		execute 'augroup '.(self.vcs_name).'_'.(self.component).'_detect'
+		execute 'autocmd!'
+		execute 'autocmd BufNewFile,BufReadPost * unlet! '.(self.key())
+		execute 'autocmd VimEnter               * unlet! '.(self.key())
+		execute 'autocmd CmdWinEnter            * unlet! '.(self.key())
+		execute 'augroup END'
+	endfunction
+
+	function! statusline.command(command)
+		return vimproc#system(substitute(a:command, '\\', '/', 'g'))
 	endfunction
 
 	return statusline
@@ -574,9 +569,11 @@ endfunction
 let g:gitstatusline = s:statusline_base('git', 'main')
 call g:gitstatusline.auto_detect()
 
-function! g:gitstatusline.statusline(root, path)
-	let is_managed = system('git -C '.a:root.' ls-files  '.a:path) != ''
-	let is_changed = system('git -C '.a:root.' status -s '.a:path) != ''
+function! g:gitstatusline.on_hook(root, path)
+	call fugitive#detect(a:path)
+
+	let is_managed = self.command('git -C '.a:root.' ls-files  '.a:path) != ''
+	let is_changed = self.command('git -C '.a:root.' status -s '.a:path) != ''
 	
 	let option  = !is_managed ? 'X'
 	\			: !is_changed ? '_'
@@ -585,19 +582,19 @@ function! g:gitstatusline.statusline(root, path)
 	return 'Git('.option.')'
 endfunction
 
-
 let g:gitcommitline = s:statusline_base('git', 'commit')
 call g:gitcommitline.auto_detect()
 
-function! g:gitcommitline.statusline(root, path)
-	if system('git -C '.a:root.' ls-files  '.a:path) == ''
+function! g:gitcommitline.on_hook(root, path)
+	if self.command('git -C '.a:root.' ls-files  '.a:path) == ''
 		return ''
 	endif
 
-	let lines = split(system('git -C '.a:root.' log --format=oneline '.a:path), "\n")
+	let lines = split(self.command('git -C '.a:root.' log --format=oneline '.a:path), "\n")
 	let commits  = len(lines)
 	let revision = commits != 0 ? lines[0][0:3] : ''
-	return commits.'#'.revision
+
+	return printf('%04d', commits).'#'.revision
 endfunction
 
 let s:exwombat = g:lightline#colorscheme#wombat#palette
