@@ -386,8 +386,9 @@ if executable('es')
 else
   nnoremap <silent> ,a  :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
 endif
-" Contests
-nnoremap <silent> ,c :<C-u>Unite atcoder -buffer-name=atcoder<CR>
+" PlayCode
+nnoremap <silent> ,cc :<C-u>Unite contest -buffer-name=[playcode]contests -default-action=join<CR>
+nnoremap <silent> ,cp :<C-u>Unite problem -buffer-name=[playcode]problems -default-action=join<CR>
 
 " <C-l>でウィンドウ分割して開く, <C-o>でタブで開く
 augroup myvimrc
@@ -477,8 +478,8 @@ let s:switch_custom_definitions = [
 \]
 
 augroup myvimrc
-	autocmd FileType *     let g:switch_custom_definitions = []
-	autocmd FileType ruby  let g:switch_custom_definitions = s:switch_custom_definitions
+	autocmd FileType *    let g:switch_custom_definitions = s:switch_custom_definitions
+	autocmd FileType ruby let g:switch_custom_definitions = []
 augroup END
 
 
@@ -506,11 +507,11 @@ endif
 " =============================================================================
 " statusline
 " =============================================================================
-function s:statusline_base(vcs_name, component)
-	let statusline = { 'vcs_name': a:vcs_name, 'component': a:component }
+function s:statusline_base(vcs, component)
+	let statusline = { 'vcs': a:vcs, 'component': a:component }
 
 	function! statusline.key()
-		return 'b:'.(self.vcs_name).'_'.(self.component).'_statusline_cache'
+		return 'w:'.(self.vcs).'_'.(self.component).'_statusline_cache'
 	endfunction
 
 	function! statusline.get_string()
@@ -518,11 +519,7 @@ function s:statusline_base(vcs_name, component)
 	endfunction
 
 	function! statusline.extract(path)
-		if a:path == '' || matchstr(a:path, '\.'.self.vcs_name) != ''
-			return ''
-		endif
-
-		let path = simplify(fnamemodify(a:path,':p:s'))
+		let path = a:path == '' ? '' : simplify(fnamemodify(a:path, ':p:s'))
 		let prev = ''
 
 		while path!=prev && !self.is_root(path)
@@ -533,24 +530,27 @@ function s:statusline_base(vcs_name, component)
 	endfunction
 
 	function! statusline.is_root(path)
-		return a:path != ''
-		\  && isdirectory(substitute(a:path,'[\/]$','','').'/.'.(self.vcs_name))
+		return a:path != '' && isdirectory(substitute(a:path,'[\/]$','','').'/.'.(self.vcs))
 	endfunction
 
 	function! statusline.on_hook(root, path)
-		return (self.vcs_name).'_'.(self.component)
+		return (self.vcs).'_'.(self.component)
 	endfunction
 
 	function! statusline.detect()
+		if !executable('git')
+			return ''
+		endif
+
 		let path = expand('%:p')
 		let root = self.extract(path)
-		execute "let ".(self.key())." = '".(root!='' ? self.on_hook(root, path) : '')."'"
+		exe "let ".(self.key())." = '".(root!='' ? self.on_hook(root, path) : '')."'"
 
 		return eval(self.key())
 	endfunction
 
 	function! statusline.auto_detect()
-		execute 'augroup '.(self.vcs_name).'_'.(self.component).'_detect'
+		execute 'augroup '.(self.vcs).'_'.(self.component).'_detect'
 		execute 'autocmd!'
 		execute 'autocmd BufNewFile,BufReadPost * unlet! '.(self.key())
 		execute 'autocmd VimEnter               * unlet! '.(self.key())
@@ -590,11 +590,8 @@ function! g:gitcommitline.on_hook(root, path)
 		return ''
 	endif
 
-	let lines = split(self.command('git -C '.a:root.' log --format=oneline '.a:path), "\n")
-	let commits  = len(lines)
-	let revision = commits != 0 ? lines[0][0:3] : ''
-
-	return printf('%04d', commits).'#'.revision
+	let log = self.command('git -C '.a:root.' log --format=oneline '.a:path)
+	return '#'.len(split(log, "\n"))
 endfunction
 
 let s:exwombat = g:lightline#colorscheme#wombat#palette

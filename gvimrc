@@ -11,6 +11,8 @@ set t_Co=256
 " カラースキーム
 colorscheme hybrid
 hi LineNr ctermfg=14 guifg=#878b91
+" hi CursorLine cterm=underline guibg=#282a2e
+hi CursorLine cterm=underline guibg=#383a3e
 
 " 透明度の設定
 augroup mygvimrc
