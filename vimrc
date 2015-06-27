@@ -20,7 +20,7 @@ let &termencoding = has('win32') || has('win64') ? 'cp932' : 'utf-8'
 " =============================================================================
 " vimfilesの設定
 " =============================================================================
-let s:home = expand(has('win32') || has('win64') ? '~/vimfiles' : '~/.vim')
+let s:home = expand('<sfile>:h')
 
 " =============================================================================
 " NeoBundle
@@ -34,12 +34,12 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 
 if executable('make')
   NeoBundle 'Shougo/vimproc.vim', {
-\   'build' : {
-\     'windows' : 'tools\\update-dll-mingw',
-\     'mac'     : 'make -f make_mac.mak',
-\     'linux'   : 'make',
-\   },
-\ }
+        \   'build' : {
+        \     'windows' : 'tools\\update-dll-mingw',
+        \     'mac'     : 'make -f make_mac.mak',
+        \     'linux'   : 'make',
+        \   },
+        \ }
 endif
 
 NeoBundle 'w0ng/vim-hybrid'            " カラースキーム
@@ -78,13 +78,13 @@ NeoBundle 'zhaocai/quickrun-runner-vimshell.vim' " QuickRunでvimshellを使う
 " C# ... 主にUnityに使うっぽい
 if executable('MSBuild') || executable('xbuild')
   NeoBundleLazy 'nosami/Omnisharp', {
-  \   'autoload': {'filetypes': ['cs']},
-  \   'build': {
-  \     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
-  \     'mac':  'xbuild server/OmniSharp.sln',
-  \     'unix': 'xbuild server/OmniSharp.sln',
-  \   }
-  \ }
+        \   'autoload': {'filetypes': ['cs']},
+        \   'build': {
+        \     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
+        \     'mac':  'xbuild server/OmniSharp.sln',
+        \     'unix': 'xbuild server/OmniSharp.sln',
+        \   }
+        \ }
 endif
 
 call neobundle#end()
@@ -136,6 +136,7 @@ augroup myvimrc
   autocmd QuickFixCmdPost *grep* cwindow
   " vimfiles/ftplugin/ruby.vim が反映されなかったらココ！
   " autocmd FileType ruby setlocal expandtab ts=2 sts=2 sw=2 autoindent
+  autocmd FileType vim setlocal expandtab ts=2 sts=2 sw=2 autoindent
 augroup END
 
 
@@ -197,12 +198,12 @@ endif
 " =============================================================================
 " キャッシュ
 " =============================================================================
-let g:neocomplete#data_directory = s:home."/cache/neocomplete/"
-let g:neosnippet#data_directory  = s:home."/cache/neosnippet/"
-let g:neomru#directory_mru_path  = s:home."/cache/neomru/directory"
-let g:neomru#file_mru_path       = s:home."/cache/neomru/file"
-let g:unite_data_directory       = s:home."/cache/unite/"
-let g:vimhell_data_directory     = s:home."/cache/vimhell/"
+let g:neocomplete#data_directory = s:home.'/cache/neocomplete/'
+let g:neosnippet#data_directory  = s:home.'/cache/neosnippet/'
+let g:neomru#directory_mru_path  = s:home.'/cache/neomru/directory'
+let g:neomru#file_mru_path       = s:home.'/cache/neomru/file'
+let g:unite_data_directory       = s:home.'/cache/unite/'
+let g:vimshell_data_directory    = s:home.'/cache/vimhell/'
 let &undodir = s:home.'/cache/undo'
 let &viminfo = &viminfo.',n'.s:home.'/cache/_viminfo'
 " let &backupdir = s:home.'/cache/backup'
@@ -271,27 +272,27 @@ endif
 " =============================================================================
 " 実行中は SAN値! ピンチ! する
 call quickrun#module#register(shabadou#make_quickrun_hook_anim(
-\	'santi_pinch',
-\	['＼(・ω・＼)　SAN値！', '　(／・ω・)／ピンチ！'],
-\	6,
-\), 1)
+      \	'santi_pinch',
+      \	['＼(・ω・＼)　SAN値！', '　(／・ω・)／ピンチ！'],
+      \	6,
+      \), 1)
 
 " Windows用の改行コード削除
 function! s:hook_quickrun_to_unix_line()
-	let s:hook = { 'name': 'to_unix_line', 'kind': 'hook' }
+  let s:hook = { 'name': 'to_unix_line', 'kind': 'hook' }
 
-	function! s:hook.init(session)
-		let config = a:session.config
-		let runner = config.runner
-		let enable = get(config, 'hook/to_unix_line/enable', 0)
-		let self.config.enable = enable
-	endfunction
+  function! s:hook.init(session)
+    let config = a:session.config
+    let runner = config.runner
+    let enable = get(config, 'hook/to_unix_line/enable', 0)
+    let self.config.enable = enable
+  endfunction
 
-	function! s:hook.on_output(session, context)
-		let a:context.data = substitute(a:context.data, "\r", '', 'g')
-	endfunction
+  function! s:hook.on_output(session, context)
+    let a:context.data = substitute(a:context.data, "\r", '', 'g')
+  endfunction
 
-	call quickrun#module#register(s:hook)
+  call quickrun#module#register(s:hook)
 endfunction
 
 call s:hook_quickrun_to_unix_line()
@@ -300,31 +301,31 @@ call s:hook_quickrun_to_unix_line()
 let s:clcommand = '"D:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/vcvars32.bat" x86 \& cl '
 
 let g:quickrun_config = {
-\  '_' : {
-\    'runner': 'vimproc',
-\    'runner/vimproc/updatetime': 40,
-\    'outputter': 'multi:buffer:quickfix',
-\    'outputter/quickfix/open_cmd' : '',
-\    'hook/time/enable': 1,
-\    'hook/to_unix_line/enable': 1,
-\    'hook/santi_pinch/enable': 1,
-\    'hook/output_encode/encoding': 'utf-8',
-\    'hook/quickfix_replate_tempname_to_bufnr/enable_exit': 1,
-\    'hook/quickfix_replate_tempname_to_bufnr/priority_exit': -10,
-\    'hook/close_quickfix/enable_success': 1,
-\    'hook/close_quickfix/enable_hook_loaded': 1,
-\    'hook/qfsigns_update/enable_exit':   1,
-\    'hook/qfsigns_update/priority_exit': 3,
-\  },
-\  'cpp/cl': {
-\   'exec': [s:clcommand.' %o %s /nologo /EHsc /Fo%s:p:r.obj /Fe%s:p:r.exe \& %s:p:r.exe %a'],
-\   'tempfile': '%{tempname()}.cpp',
-\   'hook/sweep/files': ['%S:p:r.exe', '%S:p:r.obj'],
-\   'hook/output_encode/encoding': 'cp932'
-\  },
-\  'watchdogs_checker/_': { 'hook/time/enable': 0 },
-\  'ruby/watchdogs_checker': { 'type': 'watchdogs_checker/rubocop' },
-\}
+      \  '_' : {
+      \    'runner': 'vimproc',
+      \    'runner/vimproc/updatetime': 40,
+      \    'outputter': 'multi:buffer:quickfix',
+      \    'outputter/quickfix/open_cmd' : '',
+      \    'hook/time/enable': 1,
+      \    'hook/to_unix_line/enable': 1,
+      \    'hook/santi_pinch/enable': 1,
+      \    'hook/output_encode/encoding': 'utf-8',
+      \    'hook/quickfix_replate_tempname_to_bufnr/enable_exit': 1,
+      \    'hook/quickfix_replate_tempname_to_bufnr/priority_exit': -10,
+      \    'hook/close_quickfix/enable_success': 1,
+      \    'hook/close_quickfix/enable_hook_loaded': 1,
+      \    'hook/qfsigns_update/enable_exit':   1,
+      \    'hook/qfsigns_update/priority_exit': 3,
+      \  },
+      \  'cpp/cl': {
+      \   'exec': [s:clcommand.' %o %s /nologo /EHsc /Fo%s:p:r.obj /Fe%s:p:r.exe \& %s:p:r.exe %a'],
+      \   'tempfile': '%{tempname()}.cpp',
+      \   'hook/sweep/files': ['%S:p:r.exe', '%S:p:r.obj'],
+      \   'hook/output_encode/encoding': 'cp932'
+      \  },
+      \  'watchdogs_checker/_': { 'hook/time/enable': 0 },
+      \  'ruby/watchdogs_checker': { 'type': 'watchdogs_checker/rubocop' },
+      \}
 
 if has('win32') || has('win64')
   let g:quickrun_config.cpp = { 'type': 'cpp/cl' }
@@ -471,15 +472,15 @@ nnoremap - :<C-u>Switch<CR>
 
 " 文字列リテラルをトグル 'string' → "string" → 'string' ...
 let s:switch_custom_definitions = [
-\   {
-\       '''\(.\{-}\)''' :  '"\1"',
-\        '"\(.\{-}\)"'  : '''\1''',
-\   },
-\]
+      \   {
+      \       '''\(.\{-}\)''' :  '"\1"',
+      \        '"\(.\{-}\)"'  : '''\1''',
+      \   },
+      \]
 
 augroup myvimrc
-	autocmd FileType *    let g:switch_custom_definitions = s:switch_custom_definitions
-	autocmd FileType ruby let g:switch_custom_definitions = []
+  autocmd FileType *    let g:switch_custom_definitions = s:switch_custom_definitions
+  autocmd FileType ruby let g:switch_custom_definitions = []
 augroup END
 
 
@@ -508,61 +509,61 @@ endif
 " statusline
 " =============================================================================
 function s:statusline_base(vcs, component)
-	let statusline = { 'vcs': a:vcs, 'component': a:component }
+  let statusline = { 'vcs': a:vcs, 'component': a:component }
 
-	function! statusline.key()
-		return 'w:'.(self.vcs).'_'.(self.component).'_statusline_cache'
-	endfunction
+  function! statusline.key()
+    return 'w:'.(self.vcs).'_'.(self.component).'_statusline_cache'
+  endfunction
 
-	function! statusline.get_string()
-		return exists(self.key()) ? eval(self.key()) : self.detect()
-	endfunction
+  function! statusline.get_string()
+    return exists(self.key()) ? eval(self.key()) : self.detect()
+  endfunction
 
-	function! statusline.extract(path)
-		let path = a:path == '' ? '' : simplify(fnamemodify(a:path, ':p:s'))
-		let prev = ''
+  function! statusline.extract(path)
+    let path = a:path == '' ? '' : simplify(fnamemodify(a:path, ':p:s'))
+    let prev = ''
 
-		while path!=prev && !self.is_root(path)
-			let prev = path
-			let path = fnamemodify(path, ':h')
-		endwhile
-		return self.is_root(path) ? path : ''
-	endfunction
+    while path!=prev && !self.is_root(path)
+      let prev = path
+      let path = fnamemodify(path, ':h')
+    endwhile
+    return self.is_root(path) ? path : ''
+  endfunction
 
-	function! statusline.is_root(path)
-		return a:path != '' && isdirectory(substitute(a:path,'[\/]$','','').'/.'.(self.vcs))
-	endfunction
+  function! statusline.is_root(path)
+    return a:path != '' && isdirectory(substitute(a:path,'[\/]$','','').'/.'.(self.vcs))
+  endfunction
 
-	function! statusline.on_hook(root, path)
-		return (self.vcs).'_'.(self.component)
-	endfunction
+  function! statusline.on_hook(root, path)
+    return (self.vcs).'_'.(self.component)
+  endfunction
 
-	function! statusline.detect()
-		if !executable('git')
-			return ''
-		endif
+  function! statusline.detect()
+    if !executable('git')
+      return ''
+    endif
 
-		let path = expand('%:p')
-		let root = self.extract(path)
-		exe "let ".(self.key())." = '".(root!='' ? self.on_hook(root, path) : '')."'"
+    let path = expand('%:p')
+    let root = self.extract(path)
+    exe "let ".(self.key())." = '".(root!='' ? self.on_hook(root, path) : '')."'"
 
-		return eval(self.key())
-	endfunction
+    return eval(self.key())
+  endfunction
 
-	function! statusline.auto_detect()
-		execute 'augroup '.(self.vcs).'_'.(self.component).'_detect'
-		execute 'autocmd!'
-		execute 'autocmd BufNewFile,BufReadPost * unlet! '.(self.key())
-		execute 'autocmd VimEnter               * unlet! '.(self.key())
-		execute 'autocmd CmdWinEnter            * unlet! '.(self.key())
-		execute 'augroup END'
-	endfunction
+  function! statusline.auto_detect()
+    execute 'augroup '.(self.vcs).'_'.(self.component).'_detect'
+    execute 'autocmd!'
+    execute 'autocmd BufNewFile,BufReadPost * unlet! '.(self.key())
+    execute 'autocmd VimEnter               * unlet! '.(self.key())
+    execute 'autocmd CmdWinEnter            * unlet! '.(self.key())
+    execute 'augroup END'
+  endfunction
 
-	function! statusline.command(command)
-		return vimproc#system(substitute(a:command, '\\', '/', 'g'))
-	endfunction
+  function! statusline.command(command)
+    return vimproc#system(substitute(a:command, '\\', '/', 'g'))
+  endfunction
 
-	return statusline
+  return statusline
 endfunction
 
 " -----------------------------------------------------------------------------
@@ -570,28 +571,28 @@ let g:gitstatusline = s:statusline_base('git', 'main')
 call g:gitstatusline.auto_detect()
 
 function! g:gitstatusline.on_hook(root, path)
-	call fugitive#detect(a:path)
+  call fugitive#detect(a:path)
 
-	let is_managed = self.command('git -C '.a:root.' ls-files  '.a:path) != ''
-	let is_changed = self.command('git -C '.a:root.' status -s '.a:path) != ''
-	
-	let option  = !is_managed ? 'X'
-	\			: !is_changed ? '_'
-	\			: '*'
-	
-	return 'Git('.option.')'
+  let is_managed = self.command('git -C '.a:root.' ls-files  '.a:path) != ''
+  let is_changed = self.command('git -C '.a:root.' status -s '.a:path) != ''
+
+  let option  = !is_managed ? 'X'
+        \			: !is_changed ? '_'
+        \			: '*'
+
+  return 'Git('.option.')'
 endfunction
 
 let g:gitcommitline = s:statusline_base('git', 'commit')
 call g:gitcommitline.auto_detect()
 
 function! g:gitcommitline.on_hook(root, path)
-	if self.command('git -C '.a:root.' ls-files  '.a:path) == ''
-		return ''
-	endif
+  if self.command('git -C '.a:root.' ls-files  '.a:path) == ''
+    return ''
+  endif
 
-	let log = self.command('git -C '.a:root.' log --format=oneline '.a:path)
-	return '#'.len(split(log, "\n"))
+  let log = self.command('git -C '.a:root.' log --format=oneline '.a:path)
+  return '#'.len(split(log, "\n"))
 endfunction
 
 let s:exwombat = g:lightline#colorscheme#wombat#palette
@@ -599,39 +600,39 @@ let s:exwombat.normal.git = s:exwombat.normal.warning
 let g:lightline#colorscheme#exwombat#palette = s:exwombat
 
 let g:lightline = {
-\ 'colorscheme': 'exwombat',
-\ 'active': {
-\   'left': [ [ 'mode', 'paste' ],
-\             [ 'git_main', 'git_branch', 'git_revision',
-\               'unite', 'readonly', 'filename', 'modified' ] ]
-\ },
-\ 'component': {
-\   'git_branch':   '%{exists("*fugitive#head(")?fugitive#head():""}',
-\   'git_revision': '%{g:gitcommitline.get_string()}',
-\   'unite': '%{substitute(unite#get_status_string(), " | ", "", "g")}'
-\ },
-\ 'component_expand': {
-\   'git_main': 'g:gitstatusline.get_string',
-\ },
-\ 'component_type': {
-\   'git_main': 'git'
-\ },
-\ 'component_visible_condition': {
-\   'git_main':     '(g:gitstatusline.get_string()!="")',
-\   'git_branch':   '(exists("*fugitive#head") && ""!=fugitive#head())',
-\   'git_revision': '(g:gitcommitline.get_string()!="")',
-\   'unite': '(&filetype=="unite")'
-\ },
-\ 'separator':    { 'left': '',  'right': ''  },
-\ 'subseparator': { 'left': '>', 'right': '<' }
-\ }
+      \ 'colorscheme': 'exwombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'git_main', 'git_branch', 'git_revision',
+      \               'unite', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component': {
+      \   'git_branch':   '%{exists("*fugitive#head(")?fugitive#head():""}',
+      \   'git_revision': '%{g:gitcommitline.get_string()}',
+      \   'unite': '%{substitute(unite#get_status_string(), " | ", "", "g")}'
+      \ },
+      \ 'component_expand': {
+      \   'git_main': 'g:gitstatusline.get_string',
+      \ },
+      \ 'component_type': {
+      \   'git_main': 'git'
+      \ },
+      \ 'component_visible_condition': {
+      \   'git_main':     '(g:gitstatusline.get_string()!="")',
+      \   'git_branch':   '(exists("*fugitive#head") && ""!=fugitive#head())',
+      \   'git_revision': '(g:gitcommitline.get_string()!="")',
+      \   'unite': '(&filetype=="unite")'
+      \ },
+      \ 'separator':    { 'left': '',  'right': ''  },
+      \ 'subseparator': { 'left': '>', 'right': '<' }
+      \ }
 
 
 " =============================================================================
 " matchit
 " =============================================================================
 if !exists('loaded_matchit')
-	runtime macros/matchit.vim
+  runtime macros/matchit.vim
 endif
 
 
