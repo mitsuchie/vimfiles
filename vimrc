@@ -54,9 +54,6 @@ NeoBundle 'Shougo/unite-outline'       " コード中のクラスの概要
 NeoBundle 'sgur/unite-everything'      " デスクトップ検索
 NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
 NeoBundle 'basyura/unite-rails'        " unite for rails
-NeoBundle 'eiiches/unite-tselect'      " TagSelect for Unite
-NeoBundle 'ujihisa/unite-colorscheme'  " Uniteでカラースキームを選ぶ
-NeoBundle "osyo-manga/unite-highlight" " ハイライト確認
 NeoBundle 'osyo-manga/shabadou.vim'    " QuickRunの拡張
 NeoBundle 'osyo-manga/vim-watchdogs'   " 静的コード解析(非同期)
 NeoBundle 'thinca/vim-fontzoom'        " フォントサイズ変更
@@ -113,22 +110,15 @@ set backspace=indent,start,eol  " インデントを消せるようにする
 set formatoptions-=ro   " 改行時にコメント継続させない
 set list                " 不可視文字描画
 set listchars=tab:^\_,trail:~,extends:.
-set wildmenu
-set wildmode=list,longest:full
+set wildmenu wildmode=list,longest:full
 set t_ut=
 set cursorline
 hi clear CursorLine
 
-if !(has('win32') || has('win64'))
-  set t_Co=256
-endif
-
 " カラースキーム
-if &t_Co <= 16
-  colorscheme desert
-else
-  colorscheme hybrid
-endif
+colorscheme hybrid
+
+let &t_Co = (has('win32') || has('win64')) ? &t_Co : 256
 
 " Post Launch Settings
 augroup myvimrc
@@ -198,6 +188,7 @@ endif
 " =============================================================================
 " キャッシュ
 " =============================================================================
+let g:playcode_data_directory    = s:home.'/cache/playcode'
 let g:neocomplete#data_directory = s:home.'/cache/neocomplete/'
 let g:neosnippet#data_directory  = s:home.'/cache/neosnippet/'
 let g:neomru#directory_mru_path  = s:home.'/cache/neomru/directory'
@@ -206,9 +197,6 @@ let g:unite_data_directory       = s:home.'/cache/unite/'
 let g:vimshell_data_directory    = s:home.'/cache/vimhell/'
 let &undodir = s:home.'/cache/undo'
 let &viminfo = &viminfo.',n'.s:home.'/cache/_viminfo'
-" let &backupdir = s:home.'/cache/backup'
-" let &directory = s:home.'/cache/swap'
-
 
 " =============================================================================
 " neocomplete
@@ -388,8 +376,8 @@ else
   nnoremap <silent> ,a  :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
 endif
 " PlayCode
-nnoremap <silent> ,cc :<C-u>Unite contest -buffer-name=[playcode]contests -default-action=join<CR>
-nnoremap <silent> ,cp :<C-u>Unite problem -buffer-name=[playcode]problems -default-action=join<CR>
+nnoremap <silent> ,cc :<C-u>Unite contest -buffer-name=[playcode]\ contests<CR>
+nnoremap <silent> ,cp :<C-u>Unite problem -buffer-name=[playcode]\ problems<CR>
 
 " <C-l>でウィンドウ分割して開く, <C-o>でタブで開く
 augroup myvimrc
