@@ -9,9 +9,9 @@ set fileformats=unix,dos,mac
 set t_Co=256
 
 " カラースキーム
+set background=dark
 colorscheme hybrid
 hi LineNr ctermfg=14 guifg=#878b91
-" hi CursorLine cterm=underline guibg=#282a2e
 hi CursorLine cterm=underline guibg=#383a3e
 
 " 透明度の設定
@@ -21,8 +21,8 @@ augroup END
 
 " フォントとメニュー
 if has('win32') || has('win64')
-  " set guifont=Ricty:h14:cSHIFTJIS
   set guifont=Ricty\ Diminished:h14:cSHIFTJIS
-  " let &guioptions = substitute(&guioptions, '[mT]', '', 'g')
    let &guioptions = substitute(&guioptions, '[T]', '', 'g')
+  " set guifont=Ricty:h14:cSHIFTJIS
+  " let &guioptions = substitute(&guioptions, '[mT]', '', 'g')
 end

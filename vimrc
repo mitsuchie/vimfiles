@@ -25,9 +25,7 @@ let s:home = expand('<sfile>:h')
 " =============================================================================
 " NeoBundle
 " =============================================================================
-if has('vim_starting')
-  let &runtimepath .= ','.s:home.'/bundle/neobundle.vim/'
-endif
+let &runtimepath .= has('vim_starting') ? ','.s:home.'/bundle/neobundle.vim/' : ''
 
 call neobundle#begin(expand(s:home."/bundle/"))
 NeoBundleFetch 'Shougo/neobundle.vim'
@@ -50,7 +48,6 @@ NeoBundle 'Shougo/neocomplete.vim'     " 補完
 NeoBundle 'Shougo/neosnippet.vim'      " スニペット補完
 NeoBundle 'Shougo/neosnippet-snippets' " スニペット集
 NeoBundle 'Shougo/unite.vim'           " 検索インタフェース
-NeoBundle 'Shougo/unite-outline'       " コード中のクラスの概要
 NeoBundle 'sgur/unite-everything'      " デスクトップ検索
 NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
 NeoBundle 'basyura/unite-rails'        " unite for rails
@@ -116,16 +113,13 @@ set cursorline
 hi clear CursorLine
 
 " カラースキーム
+set background=dark
 colorscheme hybrid
 
 let &t_Co = (has('win32') || has('win64')) ? &t_Co : 256
 
-" Post Launch Settings
 augroup myvimrc
-  " grepしたらquickfixを表示
   autocmd QuickFixCmdPost *grep* cwindow
-  " vimfiles/ftplugin/ruby.vim が反映されなかったらココ！
-  " autocmd FileType ruby setlocal expandtab ts=2 sts=2 sw=2 autoindent
   autocmd FileType vim setlocal expandtab ts=2 sts=2 sw=2 autoindent
 augroup END
 
@@ -180,7 +174,7 @@ nnoremap t <C-t>
 " 互換性の問題
 if !has('gui_running')
   augroup myvimrc
-    autocmd VimEnter * imap <Nul> <C-Space>
+    " autocmd VimEnter * imap <Nul> <C-Space>
   augroup END
 endif
 
@@ -197,6 +191,7 @@ let g:unite_data_directory       = s:home.'/cache/unite/'
 let g:vimshell_data_directory    = s:home.'/cache/vimhell/'
 let &undodir = s:home.'/cache/undo'
 let &viminfo = &viminfo.',n'.s:home.'/cache/_viminfo'
+
 
 " =============================================================================
 " neocomplete
@@ -235,8 +230,8 @@ let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
 " let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
 " <C-Space>でオムニ補完 VisualStudioに合わせる
-imap <Nul> <C-x><C-o>
-imap <C-Space> <C-X><C-O>
+" imap <Nul> <C-x><C-o>
+" imap <C-Space> <C-X><C-O>
 
 
 " =============================================================================
@@ -246,8 +241,8 @@ let g:neosnippet#enable_snipmate_compatibility = 1
 let g:neosnippet#snippets_directory = s:home.'/snippets/'
 
 " <C-Space>でスニペットを展開する
-imap <expr><C-Space> neosnippet#expandable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<C-Space>"
-imap <expr><Space>   neosnippet#jumpable()   ? "\<Plug>(neosnippet_expand_or_jump)" : "\<Space>"
+imap <expr><C-k> neosnippet#expandable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<C-k>"
+imap <expr><C-k> neosnippet#jumpable()   ? "\<Plug>(neosnippet_expand_or_jump)" : "\<C-k>"
 
 " For snippet_complete marker.
 if has('conceal')
@@ -338,7 +333,7 @@ execute 'sign define '.get(g:qfsigns#Config,'name').' texthl=Error text=>>'
 " ref
 " =============================================================================
 " リファレンスの文字コード
-let g:ref_refe_encoding = "UTF-8"
+let g:ref_refe_encoding = 'UTF-8'
 
 " + でカーソル下の単語のリファレンスを開く
 nmap <silent> + <Plug>(ref-keyword)
@@ -356,7 +351,6 @@ let g:unite_force_overwrite_statusline = 0  " ステータスはlightlineに任�
 " , にショートカットを割り振っておく
 " 最近開いたファイルとかその他諸々
 nnoremap <silent> ,f  :<C-u>Unite buffer file_mru file -buffer-name=searcher<CR>
-nnoremap <silent> ,,f :<C-u>Unite file_rec/async:! -buffer-name=project<CR>
 " ヤンク(コピー履歴)
 nnoremap <silent> ,y :<C-u>Unite history/yank -buffer-name=history_yank<CR>
 " ランチャー
@@ -365,7 +359,6 @@ nnoremap <silent> ,r :<C-u>Unite launcher -buffer-name=outline<CR>
 nnoremap <silent> o :<C-u>Unite outline -buffer-name=outline<CR>
 " grep結果, :Unite grep:(パス)
 nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search<CR>
-nnoremap <silent> ,,g :<C-u>Unite grep:! -buffer-name=search<CR>
 " タグ関連
 nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
 nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
