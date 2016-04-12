@@ -23,66 +23,46 @@ let &termencoding = has('win32') || has('win64') ? 'cp932' : 'utf-8'
 let s:home = expand('<sfile>:h')
 
 " =============================================================================
-" NeoBundle
+" dein
 " =============================================================================
-let &runtimepath .= has('vim_starting') ? ','.s:home.'/bundle/neobundle.vim/' : ''
+let &runtimepath .= ','.expand(s:home.'/dein/repos/github.com/Shougo/dein.vim')
 
-call neobundle#begin(expand(s:home."/bundle/"))
-NeoBundleFetch 'Shougo/neobundle.vim'
+call dein#begin(expand(s:home.'/dein'))
 
-if executable('make')
-  NeoBundle 'Shougo/vimproc.vim', {
-        \   'build' : {
-        \     'windows' : 'tools\\update-dll-mingw',
-        \     'mac'     : 'make -f make_mac.mak',
-        \     'linux'   : 'make',
-        \   },
-        \ }
-endif
+call dein#add('Shougo/dein.vim')
+call dein#add('Shougo/vimshell.vim')        " vimshell
+call dein#add('Shougo/vimfiler.vim')        " vimfiler
+call dein#add('Shougo/neomru.vim')          " 履歴
+call dein#add('Shougo/neoyank.vim')         " コピー履歴
+call dein#add('Shougo/neocomplete.vim')     " 補完
+call dein#add('Shougo/neosnippet.vim')      " スニペット補完
+call dein#add('Shougo/neosnippet-snippets') " スニペット集
+call dein#add('Shougo/unite.vim')           " 検索インタフェース
+call dein#add('w0ng/vim-hybrid')            " カラースキーム
+call dein#add('itchyny/lightline.vim')      " 綺麗なステータスライン
+call dein#add('sgur/unite-everything')      " デスクトップ検索
+call dein#add('rhysd/unite-codic.vim')      " uniteで英和辞書を使う
+call dein#add('basyura/unite-rails')        " unite for rails
+call dein#add('osyo-manga/shabadou.vim')    " QuickRunの拡張
+call dein#add('osyo-manga/vim-watchdogs')   " 静的コード解析(非同期)
+call dein#add('thinca/vim-fontzoom')        " フォントサイズ変更
+call dein#add('thinca/vim-ref')             " クイックリファレンス閲覧
+call dein#add('thinca/vim-quickrun')        " バッファのコードを実行
+call dein#add('dannyob/quickfixstatus')     " quickfixをコマンドウィンドウに表示
+call dein#add('KazuakiM/vim-qfsigns')       " quickfixをsign領域に表示
+call dein#add('koron/codic-vim')            " 英和辞書(補完にも使う)
+call dein#add('tpope/vim-surround')         " テキストオブジェクト
+call dein#add('tpope/vim-fugitive')         " Git
+call dein#add('tpope/vim-rails')            " rails
+call dein#add('kannokanno/previm')          " Markdown
+call dein#add('groenewege/vim-less')        " LESS
+call dein#add('kchmck/vim-coffee-script')   " CoffeeScript
+call dein#add('AndrewRadev/switch.vim')     " トグル操作(true <=> false など)
+call dein#add('kana/vim-submode')           " サブモード(連続操作)
+call dein#add('zhaocai/quickrun-runner-vimshell.vim') " QuickRunでvimshellを使う
 
-NeoBundle 'w0ng/vim-hybrid'            " カラースキーム
-NeoBundle 'itchyny/lightline.vim'      " 綺麗なステータスライン
-NeoBundle 'Shougo/vimshell.vim'        " vimshell
-NeoBundle 'Shougo/neomru.vim'          " 履歴
-NeoBundle 'Shougo/neocomplete.vim'     " 補完
-NeoBundle 'Shougo/neosnippet.vim'      " スニペット補完
-NeoBundle 'Shougo/neosnippet-snippets' " スニペット集
-NeoBundle 'Shougo/unite.vim'           " 検索インタフェース
-NeoBundle 'sgur/unite-everything'      " デスクトップ検索
-NeoBundle 'rhysd/unite-codic.vim'      " uniteで英和辞書を使う
-NeoBundle 'basyura/unite-rails'        " unite for rails
-NeoBundle 'osyo-manga/shabadou.vim'    " QuickRunの拡張
-NeoBundle 'osyo-manga/vim-watchdogs'   " 静的コード解析(非同期)
-NeoBundle 'thinca/vim-fontzoom'        " フォントサイズ変更
-NeoBundle 'thinca/vim-ref'             " クイックリファレンス閲覧
-NeoBundle 'thinca/vim-quickrun'        " バッファのコードを実行
-NeoBundle 'dannyob/quickfixstatus'     " quickfixをコマンドウィンドウに表示
-NeoBundle 'KazuakiM/vim-qfsigns'       " quickfixをsign領域に表示
-NeoBundle 'koron/codic-vim'            " 英和辞書(補完にも使う)
-NeoBundle 'tpope/vim-surround'         " テキストオブジェクト
-NeoBundle 'tpope/vim-fugitive'         " Git
-NeoBundle 'tpope/vim-rails'            " rails
-NeoBundle 'kannokanno/previm'          " Markdown
-NeoBundle 'groenewege/vim-less'        " LESS
-NeoBundle 'kchmck/vim-coffee-script'   " CoffeeScript
-NeoBundle 'AndrewRadev/switch.vim'     " トグル操作(true <=> false など)
-NeoBundle 'kana/vim-submode'           " サブモード(連続操作)
-NeoBundle 'zhaocai/quickrun-runner-vimshell.vim' " QuickRunでvimshellを使う
-
-" C# ... 主にUnityに使うっぽい
-if executable('MSBuild') || executable('xbuild')
-  NeoBundleLazy 'nosami/Omnisharp', {
-        \   'autoload': {'filetypes': ['cs']},
-        \   'build': {
-        \     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
-        \     'mac':  'xbuild server/OmniSharp.sln',
-        \     'unix': 'xbuild server/OmniSharp.sln',
-        \   }
-        \ }
-endif
-
-call neobundle#end()
-NeoBundleCheck
+" call dein#add('Shougo/vimproc.vim', 'make')
+call dein#end()
 
 
 " =============================================================================
@@ -170,11 +150,13 @@ inoremap jj <ESC>
 nnoremap <ESC><ESC> :nohlsearch<CR>
 " タグ関係
 nnoremap t <C-t>
+" タブで移動
+nnoremap <TAB> <C-w>w
 
 " 互換性の問題
 if !has('gui_running')
   augroup myvimrc
-    " autocmd VimEnter * imap <Nul> <C-Space>
+    autocmd VimEnter * imap <Nul> <C-Space>
   augroup END
 endif
 
@@ -187,6 +169,7 @@ let g:neocomplete#data_directory = s:home.'/cache/neocomplete/'
 let g:neosnippet#data_directory  = s:home.'/cache/neosnippet/'
 let g:neomru#directory_mru_path  = s:home.'/cache/neomru/directory'
 let g:neomru#file_mru_path       = s:home.'/cache/neomru/file'
+let g:neoyank#data_directory     = s:home.'/cache/neoyank/'
 let g:unite_data_directory       = s:home.'/cache/unite/'
 let g:vimshell_data_directory    = s:home.'/cache/vimhell/'
 let &undodir = s:home.'/cache/undo'
@@ -251,6 +234,18 @@ endif
 
 
 " =============================================================================
+" vimfiler
+" =============================================================================
+nnoremap o :<C-u>VimFiler -split -width=48<CR>
+
+
+" =============================================================================
+" vimshell
+" =============================================================================
+let g:vimshell_prompt = 'X / _ / X < '
+
+
+" =============================================================================
 " quickrun
 " =============================================================================
 " 実行中は SAN値! ピンチ! する
@@ -284,31 +279,31 @@ call s:hook_quickrun_to_unix_line()
 let s:clcommand = '"D:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/vcvars32.bat" x86 \& cl '
 
 let g:quickrun_config = {
-      \  '_' : {
-      \    'runner': 'vimproc',
-      \    'runner/vimproc/updatetime': 40,
-      \    'outputter': 'multi:buffer:quickfix',
-      \    'outputter/quickfix/open_cmd' : '',
-      \    'hook/time/enable': 1,
-      \    'hook/to_unix_line/enable': 1,
-      \    'hook/santi_pinch/enable': 1,
-      \    'hook/output_encode/encoding': 'utf-8',
-      \    'hook/quickfix_replate_tempname_to_bufnr/enable_exit': 1,
-      \    'hook/quickfix_replate_tempname_to_bufnr/priority_exit': -10,
-      \    'hook/close_quickfix/enable_success': 1,
-      \    'hook/close_quickfix/enable_hook_loaded': 1,
-      \    'hook/qfsigns_update/enable_exit':   1,
-      \    'hook/qfsigns_update/priority_exit': 3,
-      \  },
-      \  'cpp/cl': {
-      \   'exec': [s:clcommand.' %o %s /nologo /EHsc /Fo%s:p:r.obj /Fe%s:p:r.exe \& %s:p:r.exe %a'],
-      \   'tempfile': '%{tempname()}.cpp',
-      \   'hook/sweep/files': ['%S:p:r.exe', '%S:p:r.obj'],
-      \   'hook/output_encode/encoding': 'cp932'
-      \  },
-      \  'watchdogs_checker/_': { 'hook/time/enable': 0 },
-      \  'ruby/watchdogs_checker': { 'type': 'watchdogs_checker/rubocop' },
-      \}
+\  '_' : {
+\    'runner': 'vimproc',
+\    'runner/vimproc/updatetime': 40,
+\    'outputter': 'multi:buffer:quickfix',
+\    'outputter/quickfix/open_cmd' : '',
+\    'hook/time/enable': 1,
+\    'hook/to_unix_line/enable': 1,
+\    'hook/santi_pinch/enable': 1,
+\    'hook/output_encode/encoding': 'utf-8',
+\    'hook/quickfix_replate_tempname_to_bufnr/enable_exit': 1,
+\    'hook/quickfix_replate_tempname_to_bufnr/priority_exit': -10,
+\    'hook/close_quickfix/enable_success': 1,
+\    'hook/close_quickfix/enable_hook_loaded': 1,
+\    'hook/qfsigns_update/enable_exit':   1,
+\    'hook/qfsigns_update/priority_exit': 3,
+\  },
+\  'cpp/cl': {
+\   'exec': [s:clcommand.' %o %s /nologo /EHsc /Fo%s:p:r.obj /Fe%s:p:r.exe \& %s:p:r.exe %a'],
+\   'tempfile': '%{tempname()}.cpp',
+\   'hook/sweep/files': ['%S:p:r.exe', '%S:p:r.obj'],
+\   'hook/output_encode/encoding': 'cp932'
+\  },
+\  'watchdogs_checker/_': { 'hook/time/enable': 0 },
+\  'ruby/watchdogs_checker': { 'type': 'watchdogs_checker/rubocop' },
+\}
 
 if has('win32') || has('win64')
   let g:quickrun_config.cpp = { 'type': 'cpp/cl' }
@@ -355,8 +350,6 @@ nnoremap <silent> ,f  :<C-u>Unite buffer file_mru file -buffer-name=searcher<CR>
 nnoremap <silent> ,y :<C-u>Unite history/yank -buffer-name=history_yank<CR>
 " ランチャー
 nnoremap <silent> ,r :<C-u>Unite launcher -buffer-name=outline<CR>
-" outline結果, :Unite outline
-nnoremap <silent> o :<C-u>Unite outline -buffer-name=outline<CR>
 " grep結果, :Unite grep:(パス)
 nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search<CR>
 " タグ関連
@@ -398,41 +391,6 @@ call unite#custom#profile('default', 'context', {
       \ 'prompt': '> ',
       \ 'candidate_icon': '- ',
       \ 'hide_icon': 0 })
-
-
-" =============================================================================
-" codic
-" =============================================================================
-inoremap <silent> <C-o>  <C-R>=<SID>codic_complete()<CR>
-function! s:codic_complete()
-  let line = getline('.')
-  let start = match(line, '\k\+$')
-  let cand = s:codic_candidates(line[start :])
-  call complete(start +1, cand)
-  return ''
-endfunction
-function! s:codic_candidates(arglead)
-  let cand = codic#search(a:arglead, 30)
-  " error
-  if type(cand) == type(0)
-    return []
-  endif
-  " english -> english terms
-  if a:arglead =~# '^\w\+$'
-    return map(cand, '{"word": v:val["label"], "menu": join(map(copy(v:val["values"]), "v:val.word"), ",")}')
-  endif
-  " japanese -> english terms
-  return s:reverse_candidates(cand)
-endfunction
-function! s:reverse_candidates(cand)
-  let _ = []
-  for c in a:cand
-    for v in c.values
-      call add(_, {"word": v.word, "menu": !empty(v.desc) ? v.desc : c.label })
-    endfor
-  endfor
-  return _
-endfunction
 
 
 " =============================================================================
@@ -489,6 +447,9 @@ endif
 " =============================================================================
 " statusline
 " =============================================================================
+" -----------------------------------------------------------------------------
+" statusline base
+" -----------------------------------------------------------------------------
 function s:statusline_base(vcs, component)
   let statusline = { 'vcs': a:vcs, 'component': a:component }
 
@@ -520,9 +481,7 @@ function s:statusline_base(vcs, component)
   endfunction
 
   function! statusline.detect()
-    if !executable('git')
-      return ''
-    endif
+    if !executable('git') | return '' | endif
 
     let path = expand('%:p')
     let root = self.extract(path)
@@ -547,6 +506,8 @@ function s:statusline_base(vcs, component)
   return statusline
 endfunction
 
+" -----------------------------------------------------------------------------
+" statusline for git
 " -----------------------------------------------------------------------------
 let g:gitstatusline = s:statusline_base('git', 'main')
 call g:gitstatusline.auto_detect()
@@ -612,9 +573,7 @@ let g:lightline = {
 " =============================================================================
 " matchit
 " =============================================================================
-if !exists('loaded_matchit')
-  runtime macros/matchit.vim
-endif
+if !exists('loaded_matchit') | runtime macros/matchit.vim | endif
 
 
 " =============================================================================
