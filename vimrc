@@ -27,7 +27,7 @@ let s:home = expand('<sfile>:h')
 " =============================================================================
 let &runtimepath .= ','.expand(s:home.'/dein/repos/github.com/Shougo/dein.vim')
 
-call dein#begin(expand(s:home.'/dein'))
+call dein#begin(s:home.'/dein')
 
 call dein#add('Shougo/dein.vim')
 call dein#add('Shougo/vimshell.vim')        " vimshell
@@ -61,7 +61,10 @@ call dein#add('AndrewRadev/switch.vim')     " トグル操作(true <=> false な
 call dein#add('kana/vim-submode')           " サブモード(連続操作)
 call dein#add('zhaocai/quickrun-runner-vimshell.vim') " QuickRunでvimshellを使う
 
-" call dein#add('Shougo/vimproc.vim', 'make')
+if !(has('win32') || has('win64'))
+  call dein#add('Shougo/vimproc.vim', {'build': 'make'})
+endif
+
 call dein#end()
 
 
@@ -91,6 +94,7 @@ set wildmenu wildmode=list,longest:full
 set t_ut=
 set cursorline
 hi clear CursorLine
+
 
 augroup myvimrc
   autocmd QuickFixCmdPost *grep* cwindow
@@ -574,3 +578,9 @@ filetype on
 filetype plugin on
 filetype indent on
 syntax on
+
+set background=dark
+colorscheme hybrid
+
+hi LineNr ctermfg=243 guifg=#878b91
+hi CursorLine ctermbg=237 guibg=#383a3e

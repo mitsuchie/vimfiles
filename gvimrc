@@ -10,7 +10,10 @@ set t_Co=256
 
 " カラースキーム
 set background=dark
-colorscheme hybrid
+
+try
+  colorscheme hybrid
+endtry
 
 hi LineNr ctermfg=14 guifg=#878b91
 hi CursorLine cterm=underline guibg=#383a3e
