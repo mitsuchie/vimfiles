@@ -1,4 +1,17 @@
-snippet     gets_multi-ints
-abbr        "gets split map :to_i"
-options     head
+snippet gets_multi-ints
+abbr    'gets split map :to_i'
+options head
     gets.split.map(&:to_i)
+
+snippet line
+options head
+    # -----------------------------------------------------------------------------${0}
+
+snippet line_equal
+options head
+    # =============================================================================${0}
+
+snippet template
+options head
+    # coding: utf-8
+    ${0}
