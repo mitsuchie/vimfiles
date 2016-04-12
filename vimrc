@@ -92,12 +92,6 @@ set t_ut=
 set cursorline
 hi clear CursorLine
 
-" カラースキーム
-set background=dark
-colorscheme hybrid
-
-let &t_Co = (has('win32') || has('win64')) ? &t_Co : 256
-
 augroup myvimrc
   autocmd QuickFixCmdPost *grep* cwindow
   autocmd FileType vim setlocal expandtab ts=2 sts=2 sw=2 autoindent
@@ -223,20 +217,19 @@ let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
 let g:neosnippet#enable_snipmate_compatibility = 1
 let g:neosnippet#snippets_directory = s:home.'/snippets/'
 
-" <C-Space>でスニペットを展開する
-imap <expr><C-k> neosnippet#expandable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<C-k>"
-imap <expr><C-k> neosnippet#jumpable()   ? "\<Plug>(neosnippet_expand_or_jump)" : "\<C-k>"
+" スニペット展開する
+imap <C-k> <Plug>(neosnippet_expand_or_jump)
+smap <C-k> <Plug>(neosnippet_expand_or_jump)
+xmap <C-k> <Plug>(neosnippet_expand_target)
 
 " For snippet_complete marker.
-if has('conceal')
-  set conceallevel=2 concealcursor=i
-endif
+if has('conceal') | set conceallevel=2 concealcursor=i | endif
 
 
 " =============================================================================
 " vimfiler
 " =============================================================================
-nnoremap o :<C-u>VimFiler -split -width=48<CR>
+nnoremap <silent> o :<C-u>VimFiler -split -width=48 -no-quit<CR>
 
 
 " =============================================================================
@@ -349,7 +342,7 @@ nnoremap <silent> ,f  :<C-u>Unite buffer file_mru file -buffer-name=searcher<CR>
 " ヤンク(コピー履歴)
 nnoremap <silent> ,y :<C-u>Unite history/yank -buffer-name=history_yank<CR>
 " ランチャー
-nnoremap <silent> ,r :<C-u>Unite launcher -buffer-name=outline<CR>
+nnoremap <silent> ,r :<C-u>Unite launcher -buffer-name=launcher<CR>
 " grep結果, :Unite grep:(パス)
 nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search<CR>
 " タグ関連
