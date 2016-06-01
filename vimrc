@@ -111,7 +111,7 @@ let g:submode_keyseqs_to_leave = ['s', 'q']
 
 " サブモード
 nnoremap s <nop>
-nnoremap <silent> si :lcd %:h<CR>
+nnoremap si :<C-u>cd %:h<CR>
 nnoremap <silent> sv :<C-u>VimShell -split<CR>
 nnoremap <silent> sn :<C-u>Unite launcher<CR>gvim.exe
 nnoremap <silent> sH <C-w>H<CR>
@@ -143,7 +143,7 @@ call submode#enter_with('fontzoom', 'n', '', 's-', ':FontZoom +1<CR>')
 call submode#map('fontzoom', 'n', '', '+', ':FontZoom +1<CR>')
 call submode#map('fontzoom', 'n', '', '-', ':FontZoom -1<CR>')
 " エスケープ
-inoremap jj <ESC>
+" inoremap jj <ESC>
 " <ESC>連打でハイライトを消す
 nnoremap <ESC><ESC> :nohlsearch<CR>
 " タグ関係
@@ -233,7 +233,7 @@ if has('conceal') | set conceallevel=2 concealcursor=i | endif
 " =============================================================================
 " vimfiler
 " =============================================================================
-nnoremap <silent> o :<C-u>VimFiler -split -width=48 -no-quit<CR>
+nnoremap <silent> o :<C-u>VimFiler -split -winwidth=48 -no-quit<CR>
 
 
 " =============================================================================
