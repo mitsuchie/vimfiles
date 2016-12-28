@@ -59,7 +59,7 @@ call dein#add('groenewege/vim-less')        " LESS
 call dein#add('kchmck/vim-coffee-script')   " CoffeeScript
 call dein#add('AndrewRadev/switch.vim')     " トグル操作(true <=> false など)
 call dein#add('kana/vim-submode')           " サブモード(連続操作)
-call dein#add('zhaocai/quickrun-runner-vimshell.vim') " QuickRunでvimshellを使う
+call dein#add('osyo-manga/vim-brightest')  " カーソル下の単語を自動ハイライト
 
 if !(has('win32') || has('win64'))
   call dein#add('Shougo/vimproc.vim', {'build': 'make'})
@@ -74,6 +74,7 @@ call dein#end()
 set number              " 行数表示
 set ts=4 sw=4 sts=4     " 基本インデント
 set incsearch           " インクリメントサーチ
+set ignorecase          " 大文字小文字無視
 set smartindent         " スマートインデント
 set nobackup            " バックアップなし
 set noswapfile          " スワップなし
@@ -95,10 +96,11 @@ set t_ut=
 set cursorline
 hi clear CursorLine
 
-
 augroup myvimrc
   autocmd QuickFixCmdPost *grep* cwindow
   autocmd FileType vim setlocal expandtab ts=2 sts=2 sw=2 autoindent
+  autocmd FileType coffee setlocal expandtab ts=2 sts=2 sw=2 autoindent
+  autocmd FileType eruby  setlocal expandtab ts=2 sts=2 sw=2 autoindent
 augroup END
 
 
@@ -118,6 +120,8 @@ nnoremap <silent> sH <C-w>H<CR>
 nnoremap <silent> sJ <C-w>J<CR>
 nnoremap <silent> sK <C-w>K<CR>
 nnoremap <silent> sL <C-w>L<CR>
+nnoremap <silent> J 5j
+nnoremap <silent> K 5k
 " ウィンドウ幅の調整
 call submode#enter_with('resize_x', 'n', '', 'sdl', '<C-w>>')
 call submode#enter_with('resize_x', 'n', '', 'sdh', '<C-w><')
@@ -150,6 +154,7 @@ nnoremap <ESC><ESC> :nohlsearch<CR>
 nnoremap t <C-t>
 " タブで移動
 nnoremap <TAB> <C-w>w
+nnoremap <C-j> <C-i>
 
 " 互換性の問題
 if !has('gui_running')
@@ -233,7 +238,8 @@ if has('conceal') | set conceallevel=2 concealcursor=i | endif
 " =============================================================================
 " vimfiler
 " =============================================================================
-nnoremap <silent> o :<C-u>VimFiler -split -winwidth=48 -no-quit<CR>
+let g:vimfiler_as_default_explorer = 1
+nnoremap <silent> o :<C-u>VimFiler -simple -split -winwidth=32 -no-quit<CR>
 
 
 " =============================================================================
@@ -298,9 +304,13 @@ let g:quickrun_config = {
 \   'hook/sweep/files': ['%S:p:r.exe', '%S:p:r.obj'],
 \   'hook/output_encode/encoding': 'cp932'
 \  },
-\  'watchdogs_checker/_': { 'hook/time/enable': 0 },
-\  'ruby/watchdogs_checker': { 'type': 'watchdogs_checker/rubocop' },
+\
+\  'watchdogs_checker/_': { 'hook/time/enable': 0, 'outputter/quickfix/open_cmd': '' }
 \}
+
+if executable('rubocop')
+  let g:quickrun_config['ruby/watchdogs_checker'] = { 'type': 'watchdogs_checker/rubocop' }
+endif
 
 if has('win32') || has('win64')
   let g:quickrun_config.cpp = { 'type': 'cpp/cl' }
@@ -348,7 +358,8 @@ nnoremap <silent> ,y :<C-u>Unite history/yank -buffer-name=history_yank<CR>
 " ランチャー
 nnoremap <silent> ,r :<C-u>Unite launcher -buffer-name=launcher<CR>
 " grep結果, :Unite grep:(パス)
-nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search<CR>
+nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=grep<CR>
+nnoremap <silent> ,G  :<C-u>Unite grep:. -buffer-name=grep<CR><C-w><C-R><C-W>
 " タグ関連
 nnoremap g<C-]> :<C-u>Unite -immediately tselect:<C-r>=expand('<cword>')<CR><CR>
 nnoremap g] :<C-u>Unite tselect:<C-r>=expand('<cword>')<CR><CR>
@@ -572,6 +583,11 @@ let g:lightline = {
 " =============================================================================
 if !exists('loaded_matchit') | runtime macros/matchit.vim | endif
 
+
+" =============================================================================
+" brightest
+" =============================================================================
+let g:brightest#highlight = { 'group' : 'BrightestUnderline' }
 
 " =============================================================================
 filetype on
